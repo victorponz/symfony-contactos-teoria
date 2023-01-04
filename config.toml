@@ -5,6 +5,10 @@ theme = 'victor'
 enableGitInfo = true
 linenos = true
 pygmentsCodeFences = true
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = true
+
 [params]
   GitHubURL = 'https://github.com/victorponz/symfony-contactos-teoria'
   baseDir = 'symfony-teoria'

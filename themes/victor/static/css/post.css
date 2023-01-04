@@ -43,6 +43,10 @@
   #write-wrapper{
     box-shadow: var(--shadow);
   }
+  #TableOfContents{
+    margin-bottom: 40px;
+  }
+
   #TableOfContents ul a{
     color: var(--text-color);
   }
@@ -141,4 +145,8 @@ div.highlight{
   position: relative;
   overflow-x: scroll;
   background-color: #272822;
+}
+
+iframe{
+  width: 100%;
 }
