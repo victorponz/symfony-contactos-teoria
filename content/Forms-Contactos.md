@@ -5,7 +5,7 @@ layout: post
 slug: generacion-de-formularios
 conToc: true
 title : Generación de formularios
-date: 2022-09-01T19:50:07+01:00
+date: 2022-09-02T19:50:07+01:00
 ---
 
 <iframe width="960" height="540" src="https://www.youtube.com/embed/YZzLjD8PSDM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

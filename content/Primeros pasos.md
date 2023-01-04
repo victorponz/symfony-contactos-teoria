@@ -5,7 +5,7 @@ layout: post
 slug: primeros-pasos
 conToc: true
 title : Primeros pasos
-date: 2022-09-01T19:50:07+01:00
+date: 2022-09-04T19:50:07+01:00
 ---
 <iframe width="960" height="540" src="https://www.youtube.com/embed/NxXjfANWB8U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 

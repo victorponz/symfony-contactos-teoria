@@ -5,7 +5,7 @@ layout: post
 slug: object-relational-mapping
 conToc: true
 title : Object Relational Mapping
-date: 2022-09-01T19:50:07+01:00
+date: 2022-09-03T19:50:07+01:00
 ---
 
 
