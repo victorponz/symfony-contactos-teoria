@@ -1,6 +1,6 @@
 baseURL = 'https://victorponz.github.io/symfony-contactos-teoria/'
 languageCode = 'en-us'
-title = 'Aplicación de contactos paso a paso'
+title = 'Symfony - Aplicación de contactos paso a paso'
 theme = 'victor'
 enableGitInfo = true
 linenos = true
