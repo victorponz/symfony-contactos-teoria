@@ -253,7 +253,7 @@ Y  modificamos la plantilla `templates/login/index.html.twig`:
 {% endblock %}
 ```
 
-## 4.3 Formulario de registro
+## 4.2 Formulario de registro
 
 Es tan sencillo como ejecutar el comando `php bin/console make:registration-form` respondiendo a las preguntas que nos propone:
 
@@ -303,7 +303,7 @@ Ahora, si visitamos [http://localhost:8080/register](http://localhost:8080/regis
 
 
 
-## 4.4 Logout
+## 4.3 Logout
 
 Para habilitar el logout, hay que activar el parámetro `logout` en la configuración de seguridad:
 
@@ -338,7 +338,7 @@ class SecurityController extends AbstractController
 ```
 
 
-## 4.5 Contenido del archivo `security.yaml`
+## 4.4 Contenido del archivo `security.yaml`
 
 Os dejo el contenido completo por si tenéis algún problema:
 
@@ -398,11 +398,11 @@ when@test:
 
 ```
 
-## 4.6 Restringir acceso a partes de la aplicación
+## 4.5 Restringir acceso a partes de la aplicación
 
 [https://symfony.com/doc/current/security.html#add-code-to-deny-access](https://symfony.com/doc/current/security.html#add-code-to-deny-access)
 
-## 4.7 Obtener el usuario actual 
+## 4.6 Obtener el usuario actual 
 
 En un controlador
 
