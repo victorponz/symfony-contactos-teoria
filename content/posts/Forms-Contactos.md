@@ -12,7 +12,6 @@ date: 2022-09-02T19:50:07+01:00
 
 Hasta este apartado hemos aprendido algunos conceptos útiles de Symfony y algunos de sus bundles más destacados, como por ejemplo la generación de vistas con el motor de plantillas Twig y  la comunicación con la base de datos a través del ORM Doctrine. Hemos hecho algunos controladores de ejemplo para buscar datos, o para insertar. Pero, en este último caso, al no disponer aún de un mecanismo para que se envíen datos de inserción desde el cliente, hemos optado por ahora por insertar unos datos prefijados o dummy data, es decir, un contacto con unos datos ya predefinidos en el código.
 
-En este apartado veremos de qué forma se pueden definir formularios en Symfony asociados a una determinada entidad, para que lo que se envíe en el formulario se asocie a un objeto de dicha entidad, y para que podamos pre­cargar el formulario con los datos de una entidad ya existente, con el fin de poderlos modificar.
 
 ## 3.1 Creación del formulario en el controlador
 
@@ -128,50 +127,38 @@ Por lo tanto, la validación la obtendremos añadiendo una serie de restriccione
 ```php
 <?php
 
+<?php
+
 namespace App\Entity;
 
 use App\Repository\ContactoRepository;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
-
-/**
- * @ORM\Entity(repositoryClass=ContactoRepository::class)
- */
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Email;
+#[ORM\Entity(repositoryClass: ContactoRepository::class)]
 class Contacto
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
-     * (message="El nombre es obligatorio")
-     */
-    private $nombre;
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'El nombre es obligatorio')]
+    private ?string $nombre = null;
 
-    /**
-     * @ORM\Column(type="string", length=15)
-     * @Assert\NotBlank
-     * (message="El teléfono es obligatorio")
-     */
-    private $telefono;
+    #[ORM\Column(length: 15)]
+    #[Assert\NotBlank(message: 'El teléfono es obligatorio')]
+    private ?string $telefono = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank()
-     * @Assert\Email
-     * (message="El email {{ value }} no es válido")
-     */
-    private $email;
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'El correo es obligatorio')]
+    #[Assert\Email(message: 'Correo no válido')]
+    private ?string $email = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Provincia::class)
-     */
-    private $provincia;
+    #[ORM\ManyToOne(inversedBy: 'contactos')]
+    #[Assert\NotBlank(message: 'La provincia es obligatoria')]
+    private ?Provincia $provincia = null;
 
     public function getId(): ?int
     {
@@ -183,7 +170,7 @@ class Contacto
         return $this->nombre;
     }
 
-    public function setNombre(?string $nombre): self
+    public function setNombre(string $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -195,7 +182,7 @@ class Contacto
         return $this->telefono;
     }
 
-    public function setTelefono(?string $telefono): self
+    public function setTelefono(string $telefono): static
     {
         $this->telefono = $telefono;
 
@@ -207,7 +194,7 @@ class Contacto
         return $this->email;
     }
 
-    public function setEmail(?string $email): self
+    public function setEmail(string $email): static
     {
         $this->email = $email;
 
@@ -219,7 +206,7 @@ class Contacto
         return $this->provincia;
     }
 
-    public function setProvincia(?Provincia $provincia): self
+    public function setProvincia(?Provincia $provincia): static
     {
         $this->provincia = $provincia;
 
