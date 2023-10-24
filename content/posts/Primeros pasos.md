@@ -1,6 +1,6 @@
 ---
-typora-copy-images-to: ..//symfony-contactos-teoria/assets/
-typora-root-url: ../../
+typora-copy-images-to: ../../static/assets/
+typora-root-url: ../../../
 layout: post
 slug: primeros-pasos
 conToc: true
@@ -31,9 +31,7 @@ composer create-project symfony/website-skeleton symfony-contactos
 
 Este comando generará un proyecto con la siguiente estructura:
 
-![Estructura proyecto](/symfony-contactos-teoria/assets/image-20220103120234751.png)
-
-
+![Estructura proyecto](/symfony-contactos-teoria/assets/image-20220103120234751-1697018612811.png)
 
 ## 1.2 Inicio
 
@@ -58,9 +56,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PageController extends AbstractController
 {
-    /**
-     * @Route("/page", name="page")
-     */
+    #[Route('/page', name: 'page')]
     public function index(): Response
     {
         return $this->render('page/index.html.twig', [
@@ -70,23 +66,25 @@ class PageController extends AbstractController
 }
 ```
 
-Es muy parecido a los controladores de Slim: asocia una ruta a un método. Lo que lo diferencia es que la ruta se define con una anotación antes del nombre del método. En este ejemplo, asocia el método `index` con la ruta `/page/` y renderiza la plantilla `page/index.html.twig` (más adelante veremos el uso de plantillas).
+Lo que hace es asociar una ruta a un método. En este ejemplo, asocia el método `index` con la ruta `/page/` y renderiza la plantilla `page/index.html.twig` (más adelante veremos el uso de plantillas).
 
 Vamos a levantar un servidor mediante el comando `php -S 127.0.0.1:8080` dentro de la carpeta `public`
 
 Si ahora visitamos la página [http://127.0.0.1:8080/page](http://127.0.0.1:8080/page) este será el resultado:
 
-![Page Controller](/symfony-contactos-teoria/assets/image-20220103121420617.png)
+![Page Controller](/symfony-contactos-teoria/assets/image-20220103121420617-1697018691462.png)
 
-Vemos que el código renderiza la plantilla `page/index.html.twig` pasándole como parámetro `controller_name` tal y como hacíamos con Slim
 
-Ahora crea un controlador para la ruta para `/` llamado `inicio` con el siguiente código:
 
-![image-20220103121832971](/symfony-contactos-teoria/assets/image-20220103121832971.png)
+Vemos que el código renderiza la plantilla `page/index.html.twig` pasándole como parámetro `controller_name`.
+
+Ahora crea un método para la ruta para `/` llamado `inicio` con el siguiente código:
+
+![image-20231011115643513](/symfony-contactos-teoria/assets/image-20231011115643513.png)
 
 Al visitar la url [http://127.0.0.1:8080/](http://127.0.0.1:8080/) este será el resultado:
 
-![image-20220103121930288](/symfony-contactos-teoria/assets/image-20220103121930288.png)
+![image-20220103121930288](/symfony-contactos-teoria/assets/image-20220103121930288-1697018822174.png)
 
 ## 1.3 Ficha
 
@@ -94,13 +92,13 @@ Al visitar la url [http://127.0.0.1:8080/](http://127.0.0.1:8080/) este será el
 
 Vamos a crear la ficha del contacto. Para ello crea otro controlador llamado `ContactoController`:
 
-![image-20220105115910981](/symfony-contactos-teoria/assets/image-20220105115910981.png)
+![image-20231011121953921](/symfony-contactos-teoria/assets/image-20231011121953921.png)
 
 En este caso vemos el uso de los parámetros en los controladores. El parámetro `codigo` será automáticamente inyectado por Symfony,
 
 Por ejemplo, si visitas la página [http://127.0.0.1:8080/contacto/2](http://127.0.0.1:8080/contacto/2) se mostrará la siguiente ventana:
 
-![image-20220103165623881](/symfony-contactos-teoria/assets/image-20220103165623881.png)
+![image-20220103165623881](/symfony-contactos-teoria/assets/image-20220103165623881-1697018905697.png)
 
 ### 1.3.1 Base de datos
 
@@ -121,7 +119,7 @@ class ContactoController extends AbstractController
 
 Y modificamos el controlador, para que ahora nos muestre los datos del contacto pasado como parámetro:
 
-![image-20220105115937465](/symfony-contactos-teoria/assets/image-20220105115937465.png)
+![image-20231011122206560](/symfony-contactos-teoria/assets/image-20231011122206560.png)
 
 ## 1.4 Buscar
 
@@ -129,11 +127,11 @@ Y modificamos el controlador, para que ahora nos muestre los datos del contacto 
 
 Vamos a crear una ruta para buscar contactos por nombre. La ruta va a ser la siguiente: `/contacto/buscar/texto`. Para ello creamos la ruta y el controlador:
 
-![image-20220105120003635](/symfony-contactos-teoria/assets/image-20220105120003635.png)
+![image-20231011122346837](/symfony-contactos-teoria/assets/image-20231011122346837.png)
 
 Al visitar la url ([http://127.0.0.1:8080/contacto/buscar/Ma](http://127.0.0.1:8080/contacto/buscar/Ma)), obtendremos como resultado 
 
-![Listado de contactos](/symfony-contactos-teoria/assets/image-20220105115726377.png)
+![Listado de contactos](/symfony-contactos-teoria/assets/image-20220105115726377-1697019881796.png)
 
 ### 1.4.1 Añadir valores predeterminados
 
@@ -141,9 +139,7 @@ En algunas ocasiones, también nos puede interesar dar un valor por defecto a un
 
 ```php
 <?php
-/**
-* @Route("/contacto/{codigo<\d+>?1}", name="ficha_contacto")
-*/
+#[Route('/contacto/{codigo?1}', name: 'ficha_contacto')]
 ```
 
 ## 1.5 Plantillas
@@ -166,7 +162,7 @@ Vamos a crear nuestra primera plantilla, `inicio.html.twig` en la carpeta `templ
 
 y modificamos también el método `inicio` del controlador `PageController` para que, en lugar de mostrar una respuesta de texto plano, renderice la vista `inicio.html.twig` que acabamos de hacer. Para ello, el código será el siguiente:
 
-![1549218250670](/symfony-contactos-teoria/assets/1549218250670.png)
+![image-20231011122855181](/symfony-contactos-teoria/assets/image-20231011122855181.png)
 
 Observa que se utiliza `$this`. Esto es así porque el controlador hereda de `AbstractController` y este es uno de los métodos que posee.
 
@@ -176,16 +172,16 @@ La plantilla anterior no es algo demasiado habitual, ya que únicamente contiene
 
 Vamos a ver un ejemplo. Para ello creamos `ficha_contacto.html.twig` con el siguiente contenido:
 
-```twig
+```html
 <!doctype html>
 <html>
 <meta charset="utf-8">
 <body>
     <h1>Ficha del contacto</h1>
     <ul>
-        <li><strong>{{ contacto.nombre}}</strong></li>
-        <li><strong>Teléfono: </strong>{{ contacto.telefono}}</li>
-        <li><strong>Correo: </strong>{{ contacto.email}}</li>
+        <li><strong>{{ contacto.nombre }}</strong></li>
+        <li><strong>Teléfono: </strong>{{ contacto.telefono }}</li>
+        <li><strong>Correo: </strong>{{ contacto.email }}</li>
     </ul>
 </body>
 </html>
@@ -193,9 +189,9 @@ Vamos a ver un ejemplo. Para ello creamos `ficha_contacto.html.twig` con el sigu
 
 Empleamos la notación de la doble llave `{{ ... }}` para ubicar variables, que normalmente son datos que esperamos recibir de fuera (del controlador, en este caso). Nos faltaría, en el método `ficha` de `ContactoController`, obtener el contacto deseado (eso ya lo tenemos hecho) y pasárselo a la vista, de este modo:
 
-![image-20220105120047850](/symfony-contactos-teoria/assets/image-20220105120047850.png)
+![image-20231011123512167](/symfony-contactos-teoria/assets/image-20231011123512167.png)
 
-Lo único que ha variado es que ahora renderizamos una vista.
+Lo único que ha variado es que ahora renderizamos una plantilla o vista (Model**View**Controller).
 
 ### 1.5.2 Estructuras de control en plantillas
 
@@ -203,9 +199,7 @@ La plantilla anterior es un ejemplo para añadir partes dinámicas en el conteni
 
 ```php
 <?php
-/**
-* @Route("/contacto/{codigo}", name="ficha_contacto")
-*/
+#[Route('/contacto/{codigo}', name: 'ficha_contacto')]
 public function ficha($codigo): Response{
     //Si no existe el elemento con dicha clave devolvemos null
     $resultado = ($this->contactos[$codigo] ?? null);
@@ -218,17 +212,17 @@ public function ficha($codigo): Response{
 
 y la vista distinguirá si hay o no contacto, para mostrar una u otra información:
 
-![image-20220105120156156](/symfony-contactos-teoria/assets/image-20220105120156156.png)
+![image-20231011124850882](/symfony-contactos-teoria/assets/image-20231011124850882.png)
 
 Observa cómo hemos incluido un bloque `{% ... %}`, que son **bloques de acción**, empleados para definir ciertas sentencias de control (condiciones, bucles) e incluir dentro el código asociado a dicha sentencia.
 
 Del mismo modo, para el controlador de búsqueda de contactos por nombre, podemos crear una nueva vista (por ejemplo, `lista_contactos.html.twig`), que muestre el listado de contactos que reciba ya filtrado del controlador:
 
-![image-20220105120227218](/symfony-contactos-teoria/assets/image-20220105120227218.png)
+![image-20231011125119800](/symfony-contactos-teoria/assets/image-20231011125119800.png)
 
 Así, el código del controlador se limitará a filtrar los contactos y pasárselos a la vista:
 
-![image-20220105120128552](/symfony-contactos-teoria/assets/image-20220105120128552.png)
+![image-20231011125523097](/symfony-contactos-teoria/assets/image-20231011125523097.png)
 
 ### 1.5.3 Herencia de plantillas
 

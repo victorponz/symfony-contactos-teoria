@@ -10,7 +10,13 @@ date: 2022-09-01T19:50:07+01:00
 
 Symfony ya tiene integrada la gestión de usuarios.
 
-El primer paso es crear la entidad `User` usando el asistente de Symfony que se instala mediante `php bin/console make:user`
+El primer paso es crear la entidad `User` usando el asistente de Symfony que se crea mediante
+
+```
+php bin/console make:user
+```
+
+
 
 ```bash
 The name of the security user class (e.g. User) [User]:
@@ -33,7 +39,7 @@ The name of the security user class (e.g. User) [User]:
  updated: config/packages/security.yaml
 ```
 
-Este es el código generado automáticamente:
+Este es el código generado automáticamente
 
 ```php
 <?php
@@ -45,33 +51,25 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- */
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     */
-    private $email;
+    #[ORM\Column(length: 180, unique: true)]
+    private ?string $email = null;
 
-    /**
-     * @ORM\Column(type="json")
-     */
-    private $roles = [];
+    #[ORM\Column]
+    private array $roles = [];
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
      */
-    private $password;
+    #[ORM\Column]
+    private ?string $password = null;
 
     public function getId(): ?int
     {
@@ -83,7 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(string $email): static
     {
         $this->email = $email;
 
@@ -101,14 +99,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
-    public function getUsername(): string
-    {
-        return (string) $this->email;
-    }
-
-    /**
      * @see UserInterface
      */
     public function getRoles(): array
@@ -120,7 +110,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles): static
     {
         $this->roles = $roles;
 
@@ -135,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(string $password): static
     {
         $this->password = $password;
 
@@ -143,20 +133,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Returning a salt is only needed, if you are not using a modern
-     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
-     *
      * @see UserInterface
      */
-    public function getSalt(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
@@ -170,8 +149,6 @@ El paso siguiente es realizar la migración:
 php bin/console make:migration
 php bin/console doctrine:migrations:migrate
 ```
-
-## 4.1 Cargar el usuario: `User Provider`
 
 Además de crear el usuario, también se encarga de modificar la configuración de seguridad
 
@@ -189,9 +166,13 @@ security:
 
 Esta configuración le indica que la clase que gestiona el usuario es `App\Entity\User` y que el campo que proporciona el login es el `email`
 
-## 4.2 Cargar el usuario
+## 4.1 Cargar el usuario
 
-Ya sólo nos queda generar el formulario de login. Para ello ejecutamos `php bin/console make:controller Login`
+Ya sólo nos queda generar el formulario de login. Para ello ejecutamos 
+
+```
+php bin/console make:controller Login
+```
 
 ![image-20220202122654143](/symfony-contactos-teoria/assets/image-20220202122654143.png)
 
@@ -213,7 +194,7 @@ security:
                 check_path: login
 ```
 
-Y modificar el controlador para que quede así:
+Este es el controlador generado:
 
 ```php
 <?php
@@ -227,9 +208,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LoginController extends AbstractController
 {
-    /**
-     * @Route("/login", name="login")
-     */
+    #[Route('/login', name: 'login')]
     public function index(AuthenticationUtils $authenticationUtils): Response
     {
       // get the login error if there is one
@@ -337,7 +316,7 @@ Para habilitar el logout, hay que activar el parámetro `logout` en la configura
                 path: app_logout
 ```
 
-Y crear el controlador `SecurityController.php` 
+Y comprobamos el controlador `SecurityController.php` :
 
 ```php
 <?php
@@ -348,9 +327,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SecurityController extends AbstractController
 {
-    /**
-     * @Route("/logout", name="app_logout", methods={"GET"})
-     */
+
+    #[Route('/logout', name: 'app_logout', methods:["GET"])]
     public function logout(): void
     {
         // controller can be blank: it will never be called!
@@ -438,4 +416,10 @@ En twig
 ```twig
 {{ app.user }}
 ```
+
+## Reto
+
+> -reto-En la portada de la web de contactos crea un enlace para cada uno de ellos que dirigirá a una página donde poder editarlo y borrarlo. Crea la lógica en el controlador para saber si el usuario ha pulsado en editar (guardar) o en borrar. En esta [página](https://symfony.com/doc/current/form/multiple_buttons.html) explica cómo gestionar un formulario con varios botones.
+>
+> En esta página has de comprobar que el usuario esté logeado y enviarlo a `/login` en caso contrario
 
