@@ -398,7 +398,7 @@ Incluir la hoja de estilos CSS y el archivo Javascript de Bootstrap en nuestras 
    
    ```
 
-2. Editar el archivo de configuración `config/packages/twig.yaml` e indicar que los formularios usarán el tema de Bootstrap (en este caso, Bootstrap 4):
+2. Editar el archivo de configuración `config/packages/twig.yaml` e indicar que los formularios usarán el tema de Bootstrap (en este caso, Bootstrap 5):
 
    ```yaml
    twig:
