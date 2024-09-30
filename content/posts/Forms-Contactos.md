@@ -126,9 +126,6 @@ Por lo tanto, la validación la obtendremos añadiendo una serie de restriccione
 
 ```php
 <?php
-
-<?php
-
 namespace App\Entity;
 
 use App\Repository\ContactoRepository;
