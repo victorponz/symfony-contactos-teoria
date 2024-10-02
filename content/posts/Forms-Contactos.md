@@ -64,7 +64,7 @@ Por defecto, cada campo lo crea de tipo `TextType`, es decir, un `<input>` de ti
 Vamos a crear un método para renderizar el formulario:
 
 ```php
-#[Route('/contacto/nuevo', name: 'nuevo', requirements={"codigo"="\d+"})]
+#[Route('/contacto/nuevo', name: 'nuevo')]
 public function nuevo(ManagerRegistry $doctrine, Request $request) {
         $contacto = new Contacto();
         $formulario = $this->createForm(ContactoType::class, $contacto);
@@ -157,6 +157,9 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+
 use App\Entity\Provincia;
 class ContactoType extends AbstractType
 {
@@ -187,7 +190,7 @@ Lo que hemos hecho en el ejemplo anterior es una inserción de un nuevo contacto
 Podemos probarlo con este controlador:
 
 ```php
-#[Route('/contacto/editar{codigo}', name: 'editar', requirements={"codigo"="\d+"})]
+#[Route('/contacto/editar/{codigo}', name: 'editar', requirements:["codigo"=>"\d+"])]
 public function editar(ManagerRegistry $doctrine, Request $request, int $codigo) {
     $repositorio = $doctrine->getRepository(Contacto::class);
 
