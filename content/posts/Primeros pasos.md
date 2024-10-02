@@ -23,10 +23,10 @@ composer create-project symfony/website-skeleton nombre-proyecto
 
 Que hace lo mismo que la opción anterior, pero rellena el proyecto con una serie de dependencias ya instaladas de serie. Esta opción se deja por comodidad, y por motivos de "tradición", para que los desarrolladores que venían utilizando Symfony en sus versiones anteriores no aprecien cambios significativos al crear proyectos con las dependencias habituales ya instaladas. En versiones anteriores, se instalaba lo que se conocía como Symfony Standard Edition, que era una versión mucho más extensa, con varias dependencias preinstaladas.
 Suele ser bastante habitual emplear esta segunda opción para crear proyectos, ya que, aunque nos instala dependencias que puede que no lleguemos a utilizar, sí nos instala automáticamente otras muy requeridas, como el motor de plantillas Twig, el ORM Doctrine, o el gestor de logs Monolog.
-Para empezar, vamos a crear un proyecto llamado "**contactos**" con la segunda opción. Accedemos a la carpeta de trabajo, y escribimos este comando desde dentro de esa carpeta:
+Para empezar, vamos a crear un proyecto llamado "**symfony-contactos**" con la segunda opción y, además, especificamos la versión ya que la última parece tener algún bug. Accedemos a la carpeta de trabajo, y escribimos este comando desde dentro de esa carpeta:
 
 ```
-composer create-project symfony/website-skeleton symfony-contactos
+composer create-project symfony/website-skeleton:"4.4.*" symfony-contactos
 ```
 
 Este comando generará un proyecto con la siguiente estructura:

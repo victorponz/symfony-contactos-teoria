@@ -257,13 +257,11 @@ A la hora de obtener objetos de una tabla, existen diferentes métodos que podem
   <?php
   $contactos = $repositorio->findAll();
   ```
-* Se pueden llamar a métodos especiales siguiendo una sintaxis concreta. Por ejemlo si tenemos un campo llamado `name` podemos usar el método 
-  ```php
-  <?php
-  $contactos = $repositorio->findByName();
-  ```
-  Sin necesidad de crearlo en el repositorio. Es decir añadimos el nombre del campo en la consulta.
   
+<<<<<<< HEAD
+=======
+  
+>>>>>>> d1a90c77bb5814a16d9fec134b881d98c3dc5c61
 
 Todos estos métodos se obtienen a partir de un repositorio de la clase, que viene a ser algo así como un asistente que nos ayuda a obtener objetos que pertenezcan a esa clase.
 
@@ -402,15 +400,15 @@ Ahora que ya sabemos relacionar entidades entre sí, ¿cómo podemos insertar un
 Por ejemplo, si quisiéramos insertar un contacto asignándole una provincia:
 
 * Si la provincia no existe, creamos un objeto de tipo `Provincia`, y después otro de tipo `Contacto`, estableciendo como provincia el objeto `Provincia` recién creado:
-![image-20220109165914273](/symfony-contactos-teoria/assets/image-20220109165914273.png)
+  ![image-20220109165914273](/symfony-contactos-teoria/assets/image-20220109165914273.png)
   
 * Ahora modificamos la plantilla `datos_contacto.html.twig`
-![image-20220109165941038](/symfony-contactos-teoria/assets/image-20220109165941038.png)
+  ![image-20220109165941038](/symfony-contactos-teoria/assets/image-20220109165941038.png)
   
   Añadiendo la provincia mediante`contacto.provincia.nombre`
   
 * Si la provincia sí existe, la buscamos en la base de datos (con algún método `find` o similar) y después creamos el objeto `Contacto` y le asignamos ese objeto `Provincia`:
-![image-20220109170043888](/symfony-contactos-teoria/assets/image-20220109170043888.png)
+  ![image-20220109170043888](/symfony-contactos-teoria/assets/image-20220109170043888.png)
   
 #### 2.7.1.2 Búsqueda de entidades relacionadas
 

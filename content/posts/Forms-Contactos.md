@@ -128,7 +128,7 @@ Existen multitud de tipos de campo, entre los que están lo siguientes:
 
 Puedes acceder a todos los tipos de campos [aquí](https://symfony.com/doc/current/reference/forms/types.html)
 
-### 3.2.2 Etiquetas personalizadas
+### 3.2.1 Etiquetas personalizadas
 
 Como podemos ver para el caso del botón de `submit`, podemos especificar un tercer parámetro en el método `add` que es un array de propiedades del control en cuestión. Una de ellas es la propiedad `label`, que nos permite especificar qué texto tendrá asociado el control. Por defecto, se asocia el nombre del atributo correspondiente en la entidad, pero podemos cambiarlo por un texto personalizado. Para el `e­mail`, por ejemplo, podríamos poner:
 
@@ -139,7 +139,7 @@ Como podemos ver para el caso del botón de `submit`, podemos especificar un ter
 
 ![image-20220109174433735](/symfony-contactos-teoria/assets/image-20220109174433735.png)
 
-### 3.1.3 Mejorando nuestro formulario
+### 3.2.2 Mejorando nuestro formulario
 
 Aprovechando la variedad de tipos de campos que ofrece Symfony, vamos a mejorar un poco nuestro formulario añadiendo el dato Provincia que vimos en el apartado de `Doctrine`. Para ello podemos emplear un `EntityType` que tome sus datos de la entidad `Provincia`.
 
@@ -180,7 +180,7 @@ class ContactoType extends AbstractType
 
 
 
-### 3.2.1 Modificación de datos
+### 3.2.3 Modificación de datos
 
 Lo que hemos hecho en el ejemplo anterior es una inserción de un nuevo contacto, pero... ¿cómo sería hacer una modificación de contacto existente?. El funcionamiento sería muy similar, pero con un pequeño cambio: la ruta del controlador recibirá como parámetro el código del contacto a modificar, y a partir de ahí, buscaríamos el contacto y lo cargaríamos en el formulario, incluyendo su `id`. De esta forma, al hacer `persist` se modificaría el contacto existente.
 
@@ -226,9 +226,6 @@ Por lo tanto, la validación la obtendremos añadiendo una serie de restriccione
 
 ```php
 <?php
-
-<?php
-
 namespace App\Entity;
 
 use App\Repository\ContactoRepository;
@@ -365,7 +362,9 @@ Puedes consultar más información [aquí](https://symfony.com/doc/current/valid
 
 <iframe width="960" height="540" src="https://www.youtube.com/embed/NDLkZJ6yr_A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-### 3.4.2 Añadiendo estilo a los formularios
+Para finalizar este apartado, veamos algunas cuestiones que hemos dejado en el tintero y no dejan de ser igualmente importantes.
+
+### 3.4.1 Añadiendo estilo a los formularios
 
 Los formularios que hemos generado en esta sesión son muy funcionales, pero poco vistosos, ya que carecen de estilos CSS propios. Si quisiéramos añadir CSS a estos formularios, tenemos varias opciones.
 
@@ -424,7 +423,7 @@ Se tienen otras alternativas, como por ejemplo no indicar esta configuración ge
 
 Existen también otros temas disponibles que utilizar. Podéis consultar más información [aquí](https://symfony.com/doc/current/form/form_customization.html#what-are-form-themes).
 
-### 3.4.3 Añadir estilos para las validaciones
+### 3.4.1 Añadir estilos para las validaciones
 
 En el caso de las validaciones de datos del formulario, también podemos definir estilos para que los mensajes que de error que se muestran (parámetro `message` o similares en las anotaciones de la entidad) tengan un estilo determinado. Esto se consigue fácilmente eligiendo alguno de los temas predefinidos de Symfony. Por ejemplo, eligiendo Bootstrap, la apariencia de los errores de validación queda así automáticamente:
 
