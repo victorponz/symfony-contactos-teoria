@@ -11,5 +11,5 @@ pygmentsCodeFences = true
 
 [params]
   GitHubURL = 'https://github.com/victorponz/symfony-contactos-teoria'
-  baseDir = 'symfony-teoria'
+  baseDir = 'symfony-contactos-teoria'
   subtitle= 'Aprende los conceptos básicos de Symfony mediante una aplicación sencilla de contactos'

@@ -1,5 +1,5 @@
 ---
-typora-copy-images-to: ..//symfony-contactos-teoria/assets
+typora-copy-images-to: ../symfony-contactos-teoria/assets
 typora-root-url: ../../
 layout: post
 slug: object-relational-mapping
@@ -264,6 +264,7 @@ A la hora de obtener objetos de una tabla, existen diferentes métodos que podem
   ```
   Sin necesidad de crearlo en el repositorio. Es decir añadimos el nombre del campo en la consulta.
   
+
 Todos estos métodos se obtienen a partir de un repositorio de la clase, que viene a ser algo así como un asistente que nos ayuda a obtener objetos que pertenezcan a esa clase.
 
 Veamos un ejemplo con nuestra clase `ContactoController`: vamos a modificar nuestro método ficha para que, en lugar de buscar en la base de datos de prueba que hemos venido empleando en sesiones anteriores, busque por id en la base de datos real. Para ello, obtenemos el repositorio de nuestra clase `Contacto` y buscamos (`find`) el contacto con el id que hemos recibido como parámetro:
