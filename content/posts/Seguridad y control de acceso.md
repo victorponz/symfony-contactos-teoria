@@ -417,7 +417,15 @@ En twig
 {{ app.user }}
 ```
 
-## Reto
+
+
+## Reto I
+
+> -reto-
+>
+> Añade un campo `name` a la entidad `User`. Modifica también el formulario de registro.
+
+## Reto II
 
 > -reto-
 >
