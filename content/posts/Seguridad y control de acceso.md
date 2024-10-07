@@ -166,7 +166,7 @@ security:
 
 Esta configuración le indica que la clase que gestiona el usuario es `App\Entity\User` y que el campo que proporciona el login es el `email`
 
-## 4.1 Cargar el usuario
+## 4.1 Crear el login
 
 Ya sólo nos queda generar el formulario de login. Para ello ejecutamos 
 
