@@ -341,6 +341,10 @@ En el caso que queramos que el usuario se logee con el `username` o `correo` o c
 
 Por ejemplo;
 ```php
+...
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+//Demás código
+
 public function loadUserByIdentifier(string $usernameOrEmail): ?User
     {
         $entityManager = $this->getEntityManager();
