@@ -336,9 +336,27 @@ class SecurityController extends AbstractController
     }
 }
 ```
+## 4.4 Hacer login con más de un campo
+En el caso que queramos que el usuario se logee con el `username` o `correo` o cualquier otro dato, debemos modificar `UserRepository` para que implemente `UserLoaderInterface` y luego implementar el método `loadUserByIdentifier`
+
+Por ejemplo;
+```php
+public function loadUserByIdentifier(string $usernameOrEmail): ?User
+    {
+        $entityManager = $this->getEntityManager();
+        return $entityManager->createQuery(
+            'SELECT u
+                FROM App\Entity\User u
+                WHERE u.email = :query
+                OR u.username = :query' 
+        )
+            ->setParameter('query', $usernameOrEmail)
+            ->getOneOrNullResult();
+
+```
 
 
-## 4.4 Contenido del archivo `security.yaml`
+## 4.5 Contenido del archivo `security.yaml`
 
 Os dejo el contenido completo por si tenéis algún problema:
 
