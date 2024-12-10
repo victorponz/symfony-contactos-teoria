@@ -354,7 +354,13 @@ public function loadUserByIdentifier(string $usernameOrEmail): ?User
             ->getOneOrNullResult();
 
 ```
-
+Y modificar el archivo `security.yaml` para que no use el campo por defecto:
+```php
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                # property: email # o cualquier otra que hubiera
+```
 
 ## 4.5 Contenido del archivo `security.yaml`
 
