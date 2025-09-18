@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    {{- partial "head-post.html" . -}}
+    <body>
+        {{- partial "header.html" . -}}
+        <div id="menuContainer">
+          <div class="typora-menu-hidden" id="menuFixed">
+            {{ .TableOfContents }}
+          </div>
+            <div class="top-hidden" id="topFixed">
+              <a title='Mostrar/Ocultar menú' class="toogle expanded pull-left js-toolbar-action" aria-label="" href="#"><i class="fas fa-align-justify"></i></a>
+            </div>
+          </div>
+        <div>
+          
+          <div id="write-wrapper">
+            <section id="projects" class="project-container container">
+              <div id="subject-container" style="width: 100%; padding-top:80px; min-height:800px">
+                 <div class="subject-details" style="min-height:400px">
+                  <div id="write">
+                    <div style="height: 80px; border-left: 5px solid var(--text-color)"></div>
+                    <h1 class="indice atypora-menu" id="menu">{{ .Title }}</h1>
+                    <h3 class="indice">Índice</h3>
+                     {{ .TableOfContents }}                   
+                  <div id='content'>
+                   
+                    {{- block "main" . }}
+                    {{ $content := replace .Content ">-hint-" " class='hint'><i class='fa fa-lightbulb icon-blockquote'></i> "}}
+                    {{ $content = replace $content ">-info-" " class='info'><i class='fa fa-info icon-blockquote'></i> " | safeHTML}}
+                    {{ $content = replace $content ">-reto-" " class='reto'><i class='fa fa-graduation-cap icon-blockquote'></i> " | safeHTML}}
+                    {{ $content = replace $content ">-warning-" " class='warning'><i class='fa fa-exclamation icon-blockquote'></i> " | safeHTML}}
+                    {{ $content = replace $content ">-alert-" " class='alert'><i class='fa fa-bomb icon-blockquote'></i> " | safeHTML}}
+                    {{ $content = replace $content ">-toogle-" " class='toogle'>" | safeHTML}}
+                    {{ $content = replace $content ">-task-" " class='task'><i class='fa fa-tasks icon-blockquote'></i> " | safeHTML  }}
+                    {{ $content }}
+                    {{- end }}
+                  </div>
+                 </div>
+                </div>
+              </div>
+            </section> 
+          </div>
+        </div>
+        <a href="#top" id='back-to-top-link'><i class='fa fa-angle-up'></i></a>
+        {{- partial "scripts.html" . -}}
+        {{- partial "footer.html" . -}}
+    </body>
+</html>
