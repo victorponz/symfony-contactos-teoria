@@ -1,0 +1,15 @@
+baseURL = 'https://victorponz.github.io/symfony-contactos-teoria/'
+languageCode = 'en-us'
+title = 'Symfony - Aplicación de contactos paso a paso'
+theme = 'victor'
+enableGitInfo = true
+linenos = true
+pygmentsCodeFences = true
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = true
+
+[params]
+  GitHubURL = 'https://github.com/victorponz/symfony-contactos-teoria'
+  baseDir = 'symfony-contactos-teoria'
+  subtitle= 'Aprende los conceptos básicos de Symfony mediante una aplicación sencilla de contactos'

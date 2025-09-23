@@ -1,0 +1,27 @@
+{{ define "main" }}
+ 
+<section id="projects" class="project-container container">
+  <div id="subject-container" style="width: 100%; padding-top:80px">
+     <div class="subject-details" style="height: 80px;"></div>
+     <div style="margin-left:-10%">
+      {{ $date := now }}
+{{ if .GitInfo }}
+{{ $date = .GitInfo.AuthorDate }}
+{{ end }}
+
+      <h5>Última actualización 10-11-2022 </h5>
+      <h1 class="titulo">{{.Title}}</h1>
+     <h4 class="subtitulo">{{ $.Site.Params.subtitle }}</h1>
+     </div>
+     <div class="subject-details" style="min-height:400px">
+      {{ range .Paginator.Pages }}
+      <li>
+          <a href="{{.Permalink}}">{{.Title}}</a>
+      </li>
+      {{ end }}
+
+     </div>
+  </div>
+</section>
+
+{{ end }}
