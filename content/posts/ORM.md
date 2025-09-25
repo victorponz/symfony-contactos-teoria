@@ -19,6 +19,12 @@ La principal ventaja de utilizar un ORM como Doctrine es aislar la aplicación d
 
 ## 2.1 Configuración básica de Doctrine
 
+El primer paso va a ser instalar el componte ORM
+
+```
+composer require symfony/orm-pack
+```
+
 Para poder utilizar Doctrine, tenemos que indicar cómo conectar al servidor de base de datos que vayamos a utilizar. Estos parámetros de conexión se pueden configurar en el archivo `.env` de nuestro proyecto. Este es un archivo donde se definen ciertas variables propias de entorno, que luego se procesan y se convierten en variables reales. En nuestro caso, definimos una llamada `DATABASE_URL`, con una `URL` donde se especifican tanto la dirección y puerto de conexión a la base de datos, como el `login` y `password` necesarios para acceder, y el nombre de la base de datos a la que conectar. Por ejemplo, para una base de datos MySQL, la estructura general será ésta:
 
 ```bash
@@ -59,39 +65,29 @@ Como resultado, se generará una clase `Contacto` dentro de la carpeta `src/Enti
 
 ```php
 <?php
-
 namespace App\Entity;
 
+use App\Repository\ContactoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\ContactoRepository")
- */
+#[ORM\Entity(repositoryClass: ContactoRepository::class)]
 class Contacto
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $nombre;
+    #[ORM\Column(length: 255)]
+    private ?string $nombre = null;
 
-    /**
-     * @ORM\Column(type="string", length=15)
-     */
-    private $telefono;
+    #[ORM\Column(length: 255)]
+    private ?string $telefono = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $email;
-    
-    public function getId()
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -101,7 +97,7 @@ class Contacto
         return $this->nombre;
     }
 
-    public function setNombre(string $nombre): self
+    public function setNombre(string $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -113,7 +109,7 @@ class Contacto
         return $this->telefono;
     }
 
-    public function setTelefono(string $telefono): self
+    public function setTelefono(string $telefono): static
     {
         $this->telefono = $telefono;
 
@@ -125,13 +121,14 @@ class Contacto
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(string $email): static
     {
         $this->email = $email;
 
         return $this;
     }
 }
+
 ```
 
 Como podemos observar, el campo `codigo` que usábamos en nuestra base de datos de prueba lo hemos reemplazado por un `id` autonumérico que se genera automáticamente como clave principal de la clase. Por lo tanto, sólo hemos tenido que especificar el `nombre`, `teléfono` y `e­mail`, de tipo **string**.
