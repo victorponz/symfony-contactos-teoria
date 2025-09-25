@@ -258,10 +258,6 @@ A la hora de obtener objetos de una tabla, existen diferentes métodos que podem
   $contactos = $repositorio->findAll();
   ```
   
-<<<<<<< HEAD
-=======
-  
->>>>>>> d1a90c77bb5814a16d9fec134b881d98c3dc5c61
 
 Todos estos métodos se obtienen a partir de un repositorio de la clase, que viene a ser algo así como un asistente que nos ayuda a obtener objetos que pertenezcan a esa clase.
 
