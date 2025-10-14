@@ -8,7 +8,10 @@ title: Seguridad y control de accesos
 date: 2022-09-01T19:50:07+01:00
 ---
 
-Symfony ya tiene integrada la gestión de usuarios.
+Symfony ya tiene integrada la gestión de usuarios mediante el bundle `security` que se instala mediante el siguiente comando:
+```bash
+composer require security
+```
 
 El primer paso es crear la entidad `User` usando el asistente de Symfony que se crea mediante
 
@@ -52,6 +55,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -59,9 +63,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180, unique: true)]
+    #[ORM\Column(length: 180)]
     private ?string $email = null;
 
+    /**
+     * @var list<string> The user roles
+     */
     #[ORM\Column]
     private array $roles = [];
 
@@ -110,6 +117,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    /**
+     * @param list<string> $roles
+     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -120,7 +130,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -132,15 +142,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
+    #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        // @deprecated, to be removed when upgrading to Symfony 8
     }
 }
+
 ```
 
 El paso siguiente es realizar la migración:
@@ -201,27 +209,21 @@ Este es el controlador generado:
 
 namespace App\Controller;
 
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-class LoginController extends AbstractController
+final class LoginController extends AbstractController
 {
-    #[Route('/login', name: 'login')]
-    public function index(AuthenticationUtils $authenticationUtils): Response
+    #[Route('/login', name: 'app_login')]
+    public function index(): Response
     {
-      // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
         return $this->render('login/index.html.twig', [
-             'last_username' => $lastUsername,
-             'error'         => $error,
+            'controller_name' => 'LoginController',
         ]);
     }
 }
+
 ```
 
 Y  modificamos la plantilla `templates/login/index.html.twig`:
@@ -237,7 +239,7 @@ Y  modificamos la plantilla `templates/login/index.html.twig`:
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
-    <form action="{{ path('login') }}" method="post">
+    <form action="{{ path('app_login') }}" method="post">
         <label for="username">Email:</label>
         <input type="text" id="username" name="_username" value="{{ last_username }}"/>
 
@@ -264,36 +266,7 @@ Do you want to send an email to verify the user's email address after registrati
 no
 Do you want to automatically authenticate the user after registration? (yes/no) [yes]:
 yes
-
-What route should the user be redirected to after registration?:
-  [0 ] _wdt
-  [1 ] _profiler_home
-  [2 ] _profiler_search
-  [3 ] _profiler_search_bar
-  [4 ] _profiler_phpinfo
-  [5 ] _profiler_search_results
-  [6 ] _profiler_open_file
-  [7 ] _profiler
-  [8 ] _profiler_router
-  [9 ] _profiler_exception
-  [10] _profiler_exception_css
-  [11] nuevo_contacto
-  [12] editar_contacto
-  [13] insertar_sin_provincia_contacto
-  [14] insertar_con_provincia_contacto
-  [15] insertar_contacto
-  [16] ficha_contacto
-  [17] buscar_contacto
-  [18] modificar_contacto
-  [19] eliminar_contacto
-  [20] login
-  [21] page
-  [22] inicio
-  [23] _preview_error
- > 22
 ```
-
->-alert- **Importante**. Especificar el número que identifique la ruta `inicio` que es a donde redirigirá automáticamente al registrarse
 
 Se creará el controlador `App\Controller\RegistrationController.php` y la plantilla `registration/register.html.twig`
 
@@ -428,7 +401,7 @@ when@test:
 
 ## 4.5 Restringir acceso a partes de la aplicación
 
-[https://symfony.com/doc/current/security.html#add-code-to-deny-access](https://symfony.com/doc/current/security.html#add-code-to-deny-access)
+[https://symfony.com/doc/6.4/security.html#add-code-to-deny-access](https://symfony.com/doc/6.4/security.html#add-code-to-deny-access)
 
 ## 4.6 Obtener el usuario actual 
 
@@ -457,6 +430,6 @@ En twig
 
 > -reto-
 >
-> * En la portada de la web crea una lista con todos los contactos. Cada elemento será un enlace a una página donde se muestran los detalles del mismo así como un botón para Editar y Modificar. Crea la lógica en el controlador para saber si el usuario ha pulsado en editar (guardar) o en borrar. En esta [página](https://symfony.com/doc/current/form/multiple_buttons.html) explica cómo gestionar un formulario con varios botones.
+> * En la portada de la web crea una lista con todos los contactos. Cada elemento será un enlace a una página donde se muestran los detalles del mismo así como un botón para Editar y Modificar. Crea la lógica en el controlador para saber si el usuario ha pulsado en editar (guardar) o en borrar. En esta [página](https://symfony.com/doc/6.4/form/multiple_buttons.html) explica cómo gestionar un formulario con varios botones.
 > * Crea un enlace para poder añadir un contacto.
-> * Donde se necesario se ha de comprobar que el usuario está logeado y enviarlo a `/index` en caso contrario
+> * Donde sea necesario se ha de comprobar que el usuario está logeado y enviarlo a `/index` en caso contrario
