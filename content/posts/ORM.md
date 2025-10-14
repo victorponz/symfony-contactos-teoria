@@ -329,6 +329,30 @@ Por ejemplo:
 
 Nuevamente, tanto en la actualización como en el borrado, el método `flush` puede provocar una **excepción** si la operación no ha podido llevarse a cabo. Debemos tenerlo en cuenta para capturarla y generar la respuesta oportuna.
 
+## 2.6.5 Recuperar múltiples objetos.
+Vamos a modicar la página de portada para que muestre una lista con todos los contactos:
+```php
+    #[Route('/', name: 'inicio')]
+    public function inicio(ManagerRegistry $doctrine): Response
+    {
+        $repositorio = $doctrine->getRepository(Contacto::class);
+        $contactos = $repositorio->findAll();
+        //Mostramos la plantilla pasándole los contactos
+        return $this->render("inicio.html.twig", ["contactos" => $contactos]);
+    }
+```
+Y modificamos la plantilla `inicio.html.twig` para listar los contactos
+```twig
+{% extends 'base.html.twig' %}
+{% block body %}
+	<h1>Contactos</h1>
+	<h2>Bienvenido a la web de contactos.</h2>
+	<p>Página de inicio</p>
+	{% for contacto in contactos %}
+		 {{ include ('partials/datos_contacto.html.twig', {'contacto': contacto})}}
+	{% endfor %}
+{% endblock %}
+```
 ## 2.7 Relaciones entre entidades
 
 <iframe width="960" height="540" src="https://www.youtube.com/embed/z7RhQp9KpsE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
