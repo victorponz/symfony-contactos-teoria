@@ -16,13 +16,17 @@ Para el funcionamiento de un formulario nos hace falta:
 * Una plantilla que muestre el formulario
 
 ## 3.1 Creación de la clase para el formulario
+En primer lugar, hemos de instalar la dependencia para crear formularios y validarlos
+```bash
+composer require form validator
+```
 Para crear el formulario usaremos el `maker bundle`:
 ```bash
 php bin/console make:form ContactoForm Contacto
 ```
 Donde `ContactoForm` es el nombre de la clase a crear y `Contacto` es el nombre de la entidad.
 
-Este comando nos generará un formulario por defecto en la carpeta `forms` con el siguiente contenido:
+Este comando nos generará un formulario por defecto en la carpeta `Form` con el siguiente contenido:
 
 ```php
 <?php
@@ -30,12 +34,13 @@ Este comando nos generará un formulario por defecto en la carpeta `forms` con e
 namespace App\Form;
 
 use App\Entity\Contacto;
+use App\Entity\Provincia;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-
-class ContactoType extends AbstractType
+class ContactoFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -43,7 +48,10 @@ class ContactoType extends AbstractType
             ->add('nombre')
             ->add('telefono')
             ->add('email')
-            ->add('provincia')
+            ->add('provincia', EntityType::class, [
+                'class' => Provincia::class,
+                'choice_label' => 'nombre',
+            ])
             ->add('save', SubmitType::class, array('label' => 'Enviar'));
         ;
     }
@@ -55,15 +63,20 @@ class ContactoType extends AbstractType
         ]);
     }
 }
+
 ```
 
-Por defecto, cada campo lo crea de tipo `TextType`, es decir, un `<input>` de tipo `text`. Además le hemos añadido un botón para enviar el formulario.
+Por defecto, cada campo lo crea de tipo `TextType`, es decir, un `<input>` de tipo `text`, excepto el campo `provincia` que lo crea de tipo `Entity` porque es una clave ajena a la entidad `Provincia`. Además le hemos añadido un botón para enviar el formulario.
 
 ## 3.2 Creación del controlador
 
 Vamos a crear un método para renderizar el formulario:
 
 ```php
+...
+use App\Form\ContactoFormType as ContactoType;
+use Symfony\Component\HttpFoundation\Request;
+...
 #[Route('/contacto/nuevo', name: 'nuevo')]
 public function nuevo(ManagerRegistry $doctrine, Request $request) {
         $contacto = new Contacto();
@@ -89,6 +102,7 @@ public function nuevo(ManagerRegistry $doctrine, Request $request) {
 * la línea <span style=color:red>6</span> comprueba si el formulario ha sido enviado y también comprueba si es válido, que veremos más adelante.
 * la línea <span style=color:red>7</span> fija los datos de la entidad con los datos del formulario
 * las lineas <span style=color:red>9-11</span> guardan los datos en la BD.
+* la línea <span style=color:red>12</span> hace que se muestre la ruta `ficha_contacto` (que es el `name` que hemos puesto en la ruta definida en el controlador)
 * las líneas <span style=color:red>14-17</span> permiten renderizar la plantilla, pasándole un parámetro llamado `formulario`
 
 ## Plantilla
@@ -97,8 +111,7 @@ Esta es la plantilla
 
 ```twig
 {% extends 'base.html.twig' %}
-
-{% block title %}Contactos{% endblock %}
+{% block title %}Nuevo contacto{% endblock %}
 {% block body %}
     <h1>Nuevo contacto</h1>
     {{ form(formulario) }}
@@ -134,6 +147,9 @@ Como podemos ver para el caso del botón de `submit`, podemos especificar un ter
 
 ```php
 <?php
+...
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+...
 ->add('email', EmailType::class, array('label' => 'Correo electrónico'))
 ```
 
@@ -145,47 +161,8 @@ Aprovechando la variedad de tipos de campos que ofrece Symfony, vamos a mejorar 
 
 Con esto, el formulario quedaría así:
 
-```php
-<?php
-
-namespace App\Form;
-
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-
-use App\Entity\Provincia;
-class ContactoType extends AbstractType
-{
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
-        $builder
-            ->add('nombre', TextType::class)
-            ->add('telefono', TextType::class)
-            ->add('email', EmailType::class, array('label' => 'Correo electrónico'))
-            ->add('provincia', EntityType::class, array(
-                'class' => Provincia::class,
-                'choice_label' => 'nombre',))
-            ->add('save', SubmitType::class, array('label' => 'Enviar'));
-    }
-}
-```
-
-![image-20220109174804617](/symfony-contactos-teoria/assets/image-20220109174804617.png)
-
-**Automáticamente obtiene los datos de la provincia de la base de datos**
-
-
-
 ### 3.2.3 Modificación de datos
-
-Lo que hemos hecho en el ejemplo anterior es una inserción de un nuevo contacto, pero... ¿cómo sería hacer una modificación de contacto existente?. El funcionamiento sería muy similar, pero con un pequeño cambio: la ruta del controlador recibirá como parámetro el código del contacto a modificar, y a partir de ahí, buscaríamos el contacto y lo cargaríamos en el formulario, incluyendo su `id`. De esta forma, al hacer `persist` se modificaría el contacto existente.
+Lo que hemos hecho en el ejemplo anterior es una inserción de un nuevo contacto, pero... ¿cómo es hacer una modificación de contacto existente?. El funcionamiento es muy similar, pero con un pequeño cambio: la ruta del controlador recibirá como parámetro el código del contacto a modificar, y a partir de ahí, buscaríamos el contacto y lo cargaríamos en el formulario, incluyendo su `id`. De esta forma, al hacer `persist` se modificaría el contacto existente.
 
 Podemos probarlo con este controlador:
 
@@ -193,7 +170,7 @@ Podemos probarlo con este controlador:
 #[Route('/contacto/editar/{codigo}', name: 'editar', requirements:["codigo"=>"\d+"])]
 public function editar(ManagerRegistry $doctrine, Request $request, int $codigo) {
     $repositorio = $doctrine->getRepository(Contacto::class);
-
+    //En este caso, los datos los obtenemos del repositorio de contactos
     $contacto = $repositorio->find($codigo);
     if ($contacto){
         $formulario = $this->createForm(ContactoType::class, $contacto);
@@ -201,6 +178,7 @@ public function editar(ManagerRegistry $doctrine, Request $request, int $codigo)
         $formulario->handleRequest($request);
 
         if ($formulario->isSubmitted() && $formulario->isValid()) {
+            //Esta parte es igual que en la ruta para insertar
             $contacto = $formulario->getData();
             $entityManager = $doctrine->getManager();
             $entityManager->persist($contacto);
@@ -215,6 +193,7 @@ public function editar(ManagerRegistry $doctrine, Request $request, int $codigo)
             'contacto' => NULL
         ]);
     }
+}
 ```
 
 Ahora, si accedemos a [http://127.0.0.1:8080/contacto/editar/1](http://127.0.0.1:8080/contacto/editar/1), por ejemplo (suponiendo que tengamos un contacto con `id = 1` en la base de datos), se cargará el formulario con sus datos, y al enviarlo, se modificarán los campos que hayamos cambiado, y se cargará la página de inicio.
@@ -234,7 +213,6 @@ namespace App\Entity;
 use App\Repository\ContactoRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\Email;
 #[ORM\Entity(repositoryClass: ContactoRepository::class)]
 class Contacto
 {
@@ -244,20 +222,19 @@ class Contacto
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'El nombre es obligatorio')]
+    #[Assert\NotBlank]
     private ?string $nombre = null;
 
     #[ORM\Column(length: 15)]
-    #[Assert\NotBlank(message: 'El teléfono es obligatorio')]
+    #[Assert\NotBlank]
     private ?string $telefono = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'El correo es obligatorio')]
-    #[Assert\Email(message: 'Correo no válido')]
+    #[Assert\NotBlank]
     private ?string $email = null;
 
     #[ORM\ManyToOne(inversedBy: 'contactos')]
-    #[Assert\NotBlank(message: 'La provincia es obligatoria')]
+    #[Assert\NotBlank]
     private ?Provincia $provincia = null;
 
     public function getId(): ?int
@@ -318,16 +295,12 @@ class Contacto
 
 Estas aserciones repercuten directamente sobre el código HTML del formulario, donde se añadirá el atributo `required` para que se validen los datos en el cliente. Para probarlo, hay que modificar el atributo `required` mediante Firebug.
 
-Además, en todos los setters hemos de modificado el valor del atributo para que este sea nulo. Por ejemplo:
+Además, en todos los setters hemos de modificar el valor devulto para que se devuelva a sí mismo. Es lo que se llama `fluent setter`; esto permite encadenar los setters, por ejemplo: `$contacto->setNombre()->setEmail();`
 
 ```php
 <?php
 public function setTelefono(?string $telefono): self
 ```
-
-Si no hacemos el campo `nullable`  dará el siguiente error al intentar almacenar un dato vacío:
-
-![image-20220117183231785](/symfony-contactos-teoria/assets/image-20220117183231785.png)
 
 En el caso del e­mail, además, podemos especificar que queremos que sea un e­mail válido, lo que se consigue con esta otra anotación:
 
@@ -336,7 +309,6 @@ En el caso del e­mail, además, podemos especificar que queremos que sea un e­
 /**
  * @ORM\Column(type="string", length=255)
  * @Assert\NotBlank()
- * @Assert\Email()
  */
 private $email;
 ```
@@ -428,7 +400,7 @@ Existen también otros temas disponibles que utilizar. Podéis consultar más in
 
 ### 3.4.1 Añadir estilos para las validaciones
 
-En el caso de las validaciones de datos del formulario, también podemos definir estilos para que los mensajes que de error que se muestran (parámetro `message` o similares en las anotaciones de la entidad) tengan un estilo determinado. Esto se consigue fácilmente eligiendo alguno de los temas predefinidos de Symfony. Por ejemplo, eligiendo Bootstrap, la apariencia de los errores de validación queda así automáticamente:
+En el caso de las validaciones de datos del formulario, también podemos definir estilos para que los mensajes de error que se muestran (parámetro `message` o similares en las anotaciones de la entidad) tengan un estilo determinado. Esto se consigue fácilmente eligiendo alguno de los temas predefinidos de Symfony. Por ejemplo, eligiendo Bootstrap, la apariencia de los errores de validación queda así automáticamente:
 
 ![1549872771901](/symfony-contactos-teoria/assets/1549872771901.png)
 
