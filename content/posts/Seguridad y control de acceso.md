@@ -1,6 +1,6 @@
 ---
-typora-copy-images-to: ../symfony-contactos-teoria/assets
-typora-root-url: ../../
+typora-copy-images-to: ../../assets
+typora-root-url: ../../../
 layout: post
 slug: seguridad-y-control-de-accesos
 conToc: true
@@ -226,7 +226,7 @@ final class LoginController extends AbstractController
 		return $this->render('login/index.html.twig', [
             'controller_name' => 'LoginController',
             'last_username' => $lastUsername,
-             'error'         => $error,
+            'error'         => $error,
           ]);
     }
 }
