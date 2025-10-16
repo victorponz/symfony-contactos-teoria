@@ -1,6 +1,6 @@
 ---
-typora-copy-images-to: ../symfony-contactos-teoria/assets
-typora-root-url: ../../
+typora-copy-images-to: ../../assets
+typora-root-url: ../../../
 layout: post
 slug: generacion-de-formularios
 conToc: true
@@ -155,13 +155,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 ![image-20220109174433735](/symfony-contactos-teoria/assets/image-20220109174433735.png)
 
-### 3.2.2 Mejorando nuestro formulario
-
-Aprovechando la variedad de tipos de campos que ofrece Symfony, vamos a mejorar un poco nuestro formulario añadiendo el dato Provincia que vimos en el apartado de `Doctrine`. Para ello podemos emplear un `EntityType` que tome sus datos de la entidad `Provincia`.
-
-Con esto, el formulario quedaría así:
-
-### 3.2.3 Modificación de datos
+### 3.2.2 Modificación de datos
 Lo que hemos hecho en el ejemplo anterior es una inserción de un nuevo contacto, pero... ¿cómo es hacer una modificación de contacto existente?. El funcionamiento es muy similar, pero con un pequeño cambio: la ruta del controlador recibirá como parámetro el código del contacto a modificar, y a partir de ahí, buscaríamos el contacto y lo cargaríamos en el formulario, incluyendo su `id`. De esta forma, al hacer `persist` se modificaría el contacto existente.
 
 Podemos probarlo con este controlador:
