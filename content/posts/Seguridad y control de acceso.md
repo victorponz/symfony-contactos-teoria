@@ -296,7 +296,7 @@ Para habilitar el logout, hay que activar el parámetro `logout` en la configura
                 path: app_logout
 ```
 
-Y comprobamos el controlador `SecurityController.php` :
+Y creamos el controlador `SecurityController.php`, que simplemente crear la ruta `/logout`:
 
 ```php
 <?php
