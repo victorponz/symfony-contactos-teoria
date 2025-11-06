@@ -197,9 +197,9 @@ security:
         main:
             # ...
             form_login:
-                # "app-login" is the name of the route created previously
-                login_path: app-login
-                check_path: app-login
+                # "app_login" is the name of the route created previously
+                login_path: app_login
+                check_path: app_login
 ```
 
 Comprueba que este es el contenido del controlador generado. En caso contrario, modifícalo:
