@@ -19,6 +19,12 @@ La principal ventaja de utilizar un ORM como Doctrine es aislar la aplicación d
 
 ## 2.1 Configuración básica de Doctrine
 
+El primer paso va a ser instalar el componte ORM
+
+```
+composer require symfony/orm-pack
+```
+
 Para poder utilizar Doctrine, tenemos que indicar cómo conectar al servidor de base de datos que vayamos a utilizar. Estos parámetros de conexión se pueden configurar en el archivo `.env` de nuestro proyecto. Este es un archivo donde se definen ciertas variables propias de entorno, que luego se procesan y se convierten en variables reales. En nuestro caso, definimos una llamada `DATABASE_URL`, con una `URL` donde se especifican tanto la dirección y puerto de conexión a la base de datos, como el `login` y `password` necesarios para acceder, y el nombre de la base de datos a la que conectar. Por ejemplo, para una base de datos MySQL, la estructura general será ésta:
 
 ```bash
@@ -59,39 +65,29 @@ Como resultado, se generará una clase `Contacto` dentro de la carpeta `src/Enti
 
 ```php
 <?php
-
 namespace App\Entity;
 
+use App\Repository\ContactoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\ContactoRepository")
- */
+#[ORM\Entity(repositoryClass: ContactoRepository::class)]
 class Contacto
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $nombre;
+    #[ORM\Column(length: 255)]
+    private ?string $nombre = null;
 
-    /**
-     * @ORM\Column(type="string", length=15)
-     */
-    private $telefono;
+    #[ORM\Column(length: 255)]
+    private ?string $telefono = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $email;
-    
-    public function getId()
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -101,7 +97,7 @@ class Contacto
         return $this->nombre;
     }
 
-    public function setNombre(string $nombre): self
+    public function setNombre(string $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -113,7 +109,7 @@ class Contacto
         return $this->telefono;
     }
 
-    public function setTelefono(string $telefono): self
+    public function setTelefono(string $telefono): static
     {
         $this->telefono = $telefono;
 
@@ -125,13 +121,14 @@ class Contacto
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(string $email): static
     {
         $this->email = $email;
 
         return $this;
     }
 }
+
 ```
 
 Como podemos observar, el campo `codigo` que usábamos en nuestra base de datos de prueba lo hemos reemplazado por un `id` autonumérico que se genera automáticamente como clave principal de la clase. Por lo tanto, sólo hemos tenido que especificar el `nombre`, `teléfono` y `e­mail`, de tipo **string**.
@@ -255,7 +252,6 @@ A la hora de obtener objetos de una tabla, existen diferentes métodos que podem
   <?php
   $contactos = $repositorio->findAll();
   ```
-
 Todos estos métodos se obtienen a partir de un repositorio de la clase, que viene a ser algo así como un asistente que nos ayuda a obtener objetos que pertenezcan a esa clase.
 
 Veamos un ejemplo con nuestra clase `ContactoController`: vamos a modificar nuestro método ficha para que, en lugar de buscar en la base de datos de prueba que hemos venido empleando en sesiones anteriores, busque por id en la base de datos real. Para ello, obtenemos el repositorio de nuestra clase `Contacto` y buscamos (`find`) el contacto con el id que hemos recibido como parámetro:
@@ -315,7 +311,7 @@ Para actualizar un objeto en una base de datos, debemos seguir tres pasos:
 * Modificar los datos necesarios con los respectivos `setters` del objeto
 * Hacer un `flush` para actualizar los cambios en la base de datos.
 
-Si, por ejemplo, quisiéramos actualizar los datos de un contacto haríamos esto:
+Si, por ejemplo, quisiéramos actualizar el `nombre` de un contacto haríamos esto:
 
 ```php
 // El valor por defecto del parámetro `codigo` es 1
@@ -359,6 +355,30 @@ Por ejemplo:
 
 Nuevamente, tanto en la actualización como en el borrado, el método `flush` puede provocar una **excepción** si la operación no ha podido llevarse a cabo. Debemos tenerlo en cuenta para capturarla y generar la respuesta oportuna.
 
+## 2.6.5 Recuperar múltiples objetos.
+Vamos a modicar la página de portada para que muestre una lista con todos los contactos:
+```php
+    #[Route('/', name: 'inicio')]
+    public function inicio(ManagerRegistry $doctrine): Response
+    {
+        $repositorio = $doctrine->getRepository(Contacto::class);
+        $contactos = $repositorio->findAll();
+        //Mostramos la plantilla pasándole los contactos
+        return $this->render("inicio.html.twig", ["contactos" => $contactos]);
+    }
+```
+Y modificamos la plantilla `inicio.html.twig` para listar los contactos
+```twig
+{% extends 'base.html.twig' %}
+{% block body %}
+	<h1>Contactos</h1>
+	<h2>Bienvenido a la web de contactos.</h2>
+	<p>Página de inicio</p>
+	{% for contacto in contactos %}
+		 {{ include ('partials/datos_contacto.html.twig', {'contacto': contacto})}}
+	{% endfor %}
+{% endblock %}
+```
 ## 2.7 Relaciones entre entidades
 
 <iframe width="960" height="540" src="https://www.youtube.com/embed/z7RhQp9KpsE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

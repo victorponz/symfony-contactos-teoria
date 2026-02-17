@@ -32,6 +32,11 @@ Este comando generará un proyecto con la siguiente estructura:
 
 Vamos a crear nuestro primer controlador.
 
+Para ello hace falta que nos instalemos un módulo que nos ayuda en la creación de componentes:
+```
+composer require symfony/maker-bundle --dev
+```
+Y ahora ya podemos crear el primer controlador:
 ```
 php bin/console make:controller PageController
 ```
