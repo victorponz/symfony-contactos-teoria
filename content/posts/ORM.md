@@ -212,11 +212,9 @@ Si accedemos desde el navegador a la ruta http://127.0.0.1:8080/contacto/inserta
 ![1549382698610](/symfony-contactos-teoria/assets/1549382698610.png)
 
 
-
 Es **importante** recalcar que la llamada a `persist` por sí sola no actualiza la base de datos, sino que indica que se quiere persistir el objeto indicado. Es la llamada a `flush` la que hace efectiva esa persistencia.
 
 ### 2.6.2 Obtener objetos
-
 Los objetos siempre se obtienen de un repositorio, pero no hace falta especificarlo como hacíamos hasta ahora sino que lo hace automáticamente Doctrine:
 
 ```php
@@ -224,7 +222,7 @@ Los objetos siempre se obtienen de un repositorio, pero no hace falta especifica
  $repositorio = $doctrine->getRepository(Contacto::class);
 ```
 
-donde lo único que varía es el nombre de la clase.
+donde lo único que varía es el nombre de la clase, `Contacto` en este caso.
 
 A la hora de obtener objetos de una tabla, existen diferentes métodos que podemos emplear. Por ejemplo:
 
@@ -257,11 +255,6 @@ A la hora de obtener objetos de una tabla, existen diferentes métodos que podem
   <?php
   $contactos = $repositorio->findAll();
   ```
-  
-<<<<<<< HEAD
-=======
-  
->>>>>>> d1a90c77bb5814a16d9fec134b881d98c3dc5c61
 
 Todos estos métodos se obtienen a partir de un repositorio de la clase, que viene a ser algo así como un asistente que nos ayuda a obtener objetos que pertenezcan a esa clase.
 
@@ -273,7 +266,7 @@ Veamos un ejemplo con nuestra clase `ContactoController`: vamos a modificar nues
 
 Con los métodos de consulta anteriores podemos realizar consultas que se limitan a comprobar si uno o varios campos de un objeto son iguales a unos criterios de búsqueda determinados. Pero, ¿cómo podríamos, por ejemplo, buscar los contactos cuyo nombre contenga un cierto texto, o los libros de más de 100 páginas? Para este tipo de consultas, necesitamos ampliar el repositorio de nuestra entidad.
 
-Por ejemplo, para nuestra entidad `Contacto`, imaginemos que queremos buscar los contactos cuyo nombre concierta un cierto texto. Para conseguir esto, necesitamos editar el repositorio de la entidad, que está en `src/Repository/ContactoRepository.php`. Este archivo contiene comentados un par de métodos de prueba que podríamos definir para ampliar las capacidades de la entidad.
+Por ejemplo, para nuestra entidad `Contacto`, imaginemos que queremos buscar los contactos cuyo nombre incluye cierto texto. Para conseguir esto, necesitamos editar el repositorio de la entidad, que está en `src/Repository/ContactoRepository.php`. Este archivo contiene comentados un par de métodos de prueba que podríamos definir para ampliar las capacidades de la entidad.
 
 En nuestro caso, vamos a añadir un método que se encargará de obtener los contactos cuyo nombre contenga un texto determinado que le pasemos como parámetro:
 
@@ -324,7 +317,37 @@ Para actualizar un objeto en una base de datos, debemos seguir tres pasos:
 
 Si, por ejemplo, quisiéramos actualizar los datos de un contacto haríamos esto:
 
-![image-20220109165827535](/symfony-contactos-teoria/assets/image-20220109165827535.png)
+```php
+// El valor por defecto del parámetro `codigo` es 1
+#[Route('/contacto/update/{codigo?1}', name: 'update')]
+public function update(ManagerRegistry $doctrine, $codigo): Response
+{
+    $entityManager = $doctrine->getManager();
+    
+    // Se coge el repositorio de la entidad Contacto o de la que se quiera
+    $repositorio = $doctrine->getRepository(Contacto::class);
+    
+    // Se busca el contacto que tenga el id = $codigo
+    // El método `find` siempre busca por la clave de la tabla, que suele ser `id`
+    $contacto = $repositorio->find($codigo);
+    
+    // Cambiamos un dato, por ejemplo el nombre
+    $contacto->setNombre("Nombre cambiado");
+    
+    // Guardamos de forma temporal
+    $entityManager->persist($contacto);
+    
+    try{
+        // y no nos olvidemos de guardar en la base de datos
+        $entityManager->flush();
+        
+        // Mostramos la plantilla pasándole el contacto como parámetro
+        return $this->render("ficha_contacto.html.twig", ["contacto" => $contacto]);
+    }catch (\Exception $e){
+        return new Response("Se ha producido un error: " . $e->getMessage());
+    }
+}
+```
 
 ### 2.6.4 Borrar objetos
 
