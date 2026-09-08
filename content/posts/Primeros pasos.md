@@ -1,5 +1,5 @@
 ---
-typora-copy-images-to: ../../static/assets/
+typora-copy-images-to: ../../assets/
 typora-root-url: ../../../
 layout: post
 slug: primeros-pasos
@@ -75,7 +75,7 @@ Vamos a levantar un servidor de desarrollo mediante el comando `php -S 127.0.0.1
 
 Si ahora visitamos la página [http://127.0.0.1:8080/page](http://127.0.0.1:8080/page) este será el resultado:
 
-![image-20250918092739108](/symfony-contactos-teoria/static/assets/image-20250918092739108.png)
+![image-20250918092739108](/symfony-contactos-teoria/assets/image-20250918092739108.png)
 
 
 
@@ -93,7 +93,7 @@ Al visitar la url [http://127.0.0.1:8080/](http://127.0.0.1:8080/) este será el
 
 Vamos a crear la ficha del contacto. Para ello, crea otro controlador llamado `ContactoController` y una ruta para que muestre el contacto con código igual al `$codigo`
 
-![image-20260630115432185](/symfony-contactos-teoria/static/assets/image-20260630115432185.png)
+![image-20260630115432185](/symfony-contactos-teoria/assets/image-20260630115432185.png)
 
 En este caso vemos el uso de los parámetros en los controladores. El parámetro `codigo` va entre llaves y será automáticamente inyectado por Symfony,
 
@@ -261,7 +261,7 @@ Lo que hace este comando es cotejar los cambios entre nuestro modelo de entidade
 php bin/console doctrine:migration:migrate
 ```
 
-![1549382168090](/symfony-contactos-teoria/static/assets/1549382168090-1782814460374-1.png)
+![1549382168090](/symfony-contactos-teoria/assets/1549382168090-1782814460374-1.png)
 
 ### 1.2.4 Inserción de datos de forma manual
 
@@ -419,7 +419,7 @@ Vamos a ver un ejemplo. Para ello creamos `ficha_contacto.html.twig` con el sigu
 
 Empleamos la notación de la doble llave `{{ ... }}` para ubicar variables, que normalmente son datos que esperamos recibir de fuera (del controlador, en este caso). Nos faltaría, en el método `ficha` de `ContactoController`, obtener el contacto deseado (eso ya lo tenemos hecho) y pasárselo a la vista, de este modo:
 
-![image-20260701090726562](/symfony-contactos-teoria/static/assets/image-20260701090726562.png)
+![image-20260701090726562](/symfony-contactos-teoria/assets/image-20260701090726562.png)
 
 Al llamar al método `render` le pasamos a la plantilla la variable `$contacto` y en la plantilla, accedemos a ella mediante `{{contacto.nombre-del-campo}}`
 
@@ -427,7 +427,7 @@ Al llamar al método `render` le pasamos a la plantilla la variable `$contacto` 
 
 La plantilla anterior es un ejemplo para añadir partes dinámicas en el contenido de la misma, pero está algo *coja*: ¿qué pasa si no encontramos el contacto en la lista?. Si no adoptamos ninguna solución, se mostrará un error 500
 
-![image-20260701091828534](/symfony-contactos-teoria/static/assets/image-20260701091828534.png)
+![image-20260701091828534](/symfony-contactos-teoria/assets/image-20260701091828534.png)
 
 Para solucionarlo, creamos un condicional:
 
@@ -495,13 +495,13 @@ En primer lugar, definiremos la plantilla base. Tenéis un ejemplo en que basaro
 
 Como podemos observar, la parte *rellenable* de la plantilla se define mediante bloques (`blocks`), de forma que en las diferentes plantillas hija podemos indicar qué bloques de la plantilla padre queremos rellenar. Por ejemplo, vamos a definir una plantilla hija para la página de inicio. Retocamos nuestra plantilla `inicio.html.twig` y la dejamos así:
 
-![image-20260701092452955](/symfony-contactos-teoria/static/assets/image-20260701092452955.png)
+![image-20260701092452955](/symfony-contactos-teoria/assets/image-20260701092452955.png)
 
 Es importante que, si una plantilla hereda de otra, el primer código que haya en esa plantilla (sin contar comentarios previos) sea una instrucción `{% extends ... %}` para indicar que es una herencia. Después, basta con rellenar los bloques cuyo contenido queramos modificar o establecer: en este ejemplo, los bloques `title` y `body`, definidos en la plantilla base.
 
 Del mismo modo, definiríamos la plantilla `ficha_contacto.html.twig`
 
-![image-20260701092616330](/symfony-contactos-teoria/static/assets/image-20260701092616330.png)
+![image-20260701092616330](/symfony-contactos-teoria/assets/image-20260701092616330.png)
 
 ### 1.3.4 Incluir plantillas dentro de otras
 
@@ -517,7 +517,7 @@ Otra opción interesante, aparte de la herencia, es la de poder incluir una plan
 
 E incluirla tanto en `ficha_contacto.html.twig`
 
-![image-20260701094159051](/symfony-contactos-teoria/static/assets/image-20260701094159051.png)
+![image-20260701094159051](/symfony-contactos-teoria/assets/image-20260701094159051.png)
 
 ### 1.3.5 Añadir contenido estático en plantillas
 
@@ -640,7 +640,7 @@ Y modificamos la plantilla `inicio.html.twig` para listar los contactos
 
 ### 1.6.1 Ruta no encontrada
 
-![image-20260701094815811](/symfony-contactos-teoria/static/assets/image-20260701094815811.png)
+![image-20260701094815811](/symfony-contactos-teoria/assets/image-20260701094815811.png)
 
 Pues eso. La ruta no coincide con ningún controlador.
 
@@ -656,7 +656,7 @@ Para comprobar qué rutas hay, usa el siguiente comando:
 php bin/console debug:route --show-controllers
 ```
 
-![image-20260701111508603](/symfony-contactos-teoria/static/assets/image-20260701111508603.png)
+![image-20260701111508603](/symfony-contactos-teoria/assets/image-20260701111508603.png)
 
 Si quieres comprobar qué ruta coincide con un path, usa
 
@@ -670,15 +670,15 @@ Por ejemplo:
 php bin/console router:match /contacto/1
 ```
 
-![image-20260701111132425](/symfony-contactos-teoria/static/assets/image-20260701111132425.png)
+![image-20260701111132425](/symfony-contactos-teoria/assets/image-20260701111132425.png)
 
 Si no encuentra ninguna:
 
-![image-20260701111209305](/symfony-contactos-teoria/static/assets/image-20260701111209305.png)
+![image-20260701111209305](/symfony-contactos-teoria/assets/image-20260701111209305.png)
 
 ### 1.6.2 Un campo no existe
 
-![image-20260701111706662](/symfony-contactos-teoria/static/assets/image-20260701111706662.png)
+![image-20260701111706662](/symfony-contactos-teoria/assets/image-20260701111706662.png)
 
 :ok_hand: **Solución**: **revisa bien el nombre del campo en la entidad**
 
@@ -686,35 +686,35 @@ En este caso, el campo se llama `email`
 
 ### 1.6.3 Una variable no existe
 
-![image-20260701111917334](/symfony-contactos-teoria/static/assets/image-20260701111917334.png)
+![image-20260701111917334](/symfony-contactos-teoria/assets/image-20260701111917334.png)
 
 :ok_hand: **Solución**: **revisa bien el nombre de la variable en la plantilla y también revisa el nombre de la variable en el controlador**
 
-![image-20260701112104691](/symfony-contactos-teoria/static/assets/image-20260701112104691.png)
+![image-20260701112104691](/symfony-contactos-teoria/assets/image-20260701112104691.png)
 
 Fíjate que dice `contato` no `contacto`
 
 ### 1.6.4  No encuentra la plantilla 
 
-![image-20260701112501052](/symfony-contactos-teoria/static/assets/image-20260701112501052.png)
+![image-20260701112501052](/symfony-contactos-teoria/assets/image-20260701112501052.png)
 
 :ok_hand: **Revisa el nombre tanto de la plantilla en el controlador como del archivo físico de la misma**
 
 En este caso, lo correcto es `ficha_contacto.html.twig` y no `ficha_contato.html.twig`
 
-![image-20260701112907891](/symfony-contactos-teoria/static/assets/image-20260701112907891.png)
+![image-20260701112907891](/symfony-contactos-teoria/assets/image-20260701112907891.png)
 
 También puede ser que el nombre del archivo de la plantilla tenga algún gazapo:
 
 :ok_hand: **Lee uno a uno los caracteres hasta encontrar el gazapo**
 
-![image-20260701113158073](/symfony-contactos-teoria/static/assets/image-20260701113158073.png)
+![image-20260701113158073](/symfony-contactos-teoria/assets/image-20260701113158073.png)
 
 ### 1.6.5 Qué no hacer
 
 Cuando os da un error, muestra la línea que lo ha producido. Para solucionarlo, solo mirar en aquellos archivos que habéis tocado y dejad a una lado los del propio framework, pues seguro que el error no está ahí. Por ejemplo,
 
-![image-20260701114404877](/symfony-contactos-teoria/static/assets/image-20260701114404877.png)
+![image-20260701114404877](/symfony-contactos-teoria/assets/image-20260701114404877.png)
 
 El error no estará en el archivo `vendor/autoload_runtime.php`,  buscad  en vuestro código.
 
