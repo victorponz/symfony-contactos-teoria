@@ -431,7 +431,7 @@ La plantilla anterior es un ejemplo para añadir partes dinámicas en el conteni
 
 Para solucionarlo, creamos un condicional:
 
-```twig
+```html
 <!doctype html>
 <html>
 	<meta charset="utf-8">
