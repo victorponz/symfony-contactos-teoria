@@ -148,7 +148,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // @deprecated, to be removed when upgrading to Symfony 8
     }
 }
-
 ```
 
 El paso siguiente es realizar la migración:
@@ -179,7 +178,7 @@ Esta configuración le indica que la clase que gestiona el usuario es `App\Entit
 Ya sólo nos queda generar el formulario de login. Para ello ejecutamos 
 
 ```
-php bin/console make:controller Login
+php bin/console make:security:form-login
 ```
 
 ![image-20220202122654143](/symfony-contactos-teoria/assets/image-20220202122654143.png)
@@ -197,9 +196,9 @@ security:
         main:
             # ...
             form_login:
-                # "login" is the name of the route created previously
-                login_path: login
-                check_path: login
+                # "app_login" is the name of the route created previously
+                login_path: app_login
+                check_path: app_login
 ```
 
 Comprueba que este es el contenido del controlador generado. En caso contrario, modifícalo:
@@ -212,22 +211,29 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-final class LoginController extends AbstractController
+class SecurityController extends AbstractController
 {
-    #[Route('/login', name: 'app_login')]
-    public function index(AuthenticationUtils $authenticationUtils): Response
+    #[Route(path: '/login', name: 'app_login')]
+    public function login(AuthenticationUtils $authenticationUtils): Response
     {
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
+
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-		return $this->render('login/index.html.twig', [
-            'controller_name' => 'LoginController',
+
+        return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
-            'error'         => $error,
-          ]);
+            'error' => $error,
+        ]);
+    }
+
+    #[Route(path: '/logout', name: 'app_logout')]
+    public function logout(): void
+    {
+        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 }
 
@@ -236,43 +242,60 @@ final class LoginController extends AbstractController
 Y  modificamos la plantilla `templates/login/index.html.twig`:
 
 ```twig
-{# templates/login/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{# ... #}
+{% block title %}Log in!{% endblock %}
 
 {% block body %}
-    {% if error %}
-        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+    <form method="post">
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
 
-    <form action="{{ path('app_login') }}" method="post">
-        <label for="username">Email:</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}"/>
+        {% if app.user %}
+            <div class="mb-3">
+                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+            </div>
+        {% endif %}
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="_password"/>
+        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <label for="username">Email</label>
+        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
+        <label for="password">Password</label>
+        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
-        {# If you want to control the URL the user is redirected to on success
-        <input type="hidden" name="_target_path" value="/account"/> #}
+        {#
+            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+            See https://symfony.com/doc/current/security/remember_me.html
 
-        <button type="submit">login</button>
+            <div class="checkbox mb-3">
+                <input type="checkbox" name="_remember_me" id="_remember_me">
+                <label for="_remember_me">Remember me</label>
+            </div>
+        #}
+
+        <button class="btn btn-lg btn-primary" type="submit">
+            Sign in
+        </button>
     </form>
-
 {% endblock %}
+
 ```
 
 ## 4.2 Formulario de registro
 
 Es tan sencillo como ejecutar el comando `php bin/console make:registration-form` respondiendo a las preguntas que nos propone:
 
-```bash
+```
 Do you want to add a @UniqueEntity validation annotation on your User class to make sure duplicate accounts aren't created? (yes/no) [yes]:
 yes
 Do you want to send an email to verify the user's email address after registration? (yes/no) [yes]:
 no
 Do you want to automatically authenticate the user after registration? (yes/no) [yes]:
 yes
+Do you want to generate PHPUnit tests? [Experimental] (yes/no) [no]:
+no
 ```
 
 Se creará el controlador `App\Controller\RegistrationController.php` y la plantilla `registration/register.html.twig`

@@ -1,6 +1,6 @@
 ---
-typora-copy-images-to: ../symfony-contactos-teoria/assets
-typora-root-url: ../../
+typora-copy-images-to: ../../static/assets/
+typora-root-url: ../../../
 layout: post
 slug: object-relational-mapping
 conToc: true
@@ -9,274 +9,75 @@ date: 2022-09-03T19:50:07+01:00
 ---
 
 
-<iframe width="960" height="540" src="https://www.youtube.com/embed/kgH-9r4_3kc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Un ORM (Object Relational Mapping) es un framework encargado de tratar con una base de datos relacional (conectar con ella, realizar operaciones de consulta, inserción, etc.), de forma que, de cara a la aplicación, se convierten a objetos todos los elementos que se extraigan de la base de datos, y viceversa (los objetos de la aplicación se transforman en registros de la base de datos, llegado el caso).
-
-De esta forma, el ORM se encargará de realizar esta conversión o mapeo automáticamente por nosotros. Definiendo una serie de reglas, indicaremos qué tablas de la base de datos relacional se corresponden con qué clases de nuestro modelo, y qué campos de cada tabla se corresponden con qué atributos de cada clase. A partir de ahí, el ORM se encargará de extraer la información de la base de datos y crear los objetos correspondientes, o de convertir los objetos con sus atributos en registros de la base de datos, con sus correspondientes columnas.
-
-La principal ventaja de utilizar un ORM como Doctrine es aislar la aplicación del gestor de base de datos que hayamos elegido (MySQL, Oracle, PostgreSQL...) ya que a nivel de aplicación trabajaremos con objetos, y será Doctrine quien se encargue de conectar con la base de datos elegida, y transformar los objetos para adaptarlos a la misma.
-
-## 2.1 Configuración básica de Doctrine
-
-El primer paso va a ser instalar el componte ORM
-
-```
-composer require symfony/orm-pack
-```
-
-Para poder utilizar Doctrine, tenemos que indicar cómo conectar al servidor de base de datos que vayamos a utilizar. Estos parámetros de conexión se pueden configurar en el archivo `.env` de nuestro proyecto. Este es un archivo donde se definen ciertas variables propias de entorno, que luego se procesan y se convierten en variables reales. En nuestro caso, definimos una llamada `DATABASE_URL`, con una `URL` donde se especifican tanto la dirección y puerto de conexión a la base de datos, como el `login` y `password` necesarios para acceder, y el nombre de la base de datos a la que conectar. Por ejemplo, para una base de datos MySQL, la estructura general será ésta:
-
-```bash
-DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
-```
-
-En nuestro caso, será
-
-```bash
-DATABASE_URL=mysql://root:sa@127.0.0.1:3306/contactos
-```
-
-En el caso de que la base de datos aún no exista, Doctrine puede crearla por nosotros.
-Para ello, basta con escribir el siguiente comando:
-
-```bash
-php bin/console doctrine:database:create
-```
-Automáticamente, se tomará el nombre de la base de datos de la variable de entorno anterior, se conectará al servidor y se creará (sin tablas, de momento).
-
-## 2.2 Creación de entidades
-
-Las entidades son las clases que van a componer el modelo de datos de nuestra aplicación. Por ejemplo, para nuestra aplicación de contactos, necesitaremos una entidad/clase llamada `Contacto` que almacene los datos concretos de cada contacto (código, nombre, teléfono y e­mail).
-Para crear una entidad, empleamos el siguiente comando desde el terminal (dentro de la carpeta principal de nuestro proyecto Symfony):
-
-```bash
-php bin/console make:entity
-```
-
-Se iniciará un asistente que nos irá pidiendo información para construir la entidad:
-
-* Nombre de la clase o entidad
-* Propiedades o atributos de la clase, para cada uno, pedirá el nombre (si directamente pulsamos Intro dejará de pedirnos más datos), el tipo de dato, la longitud o tamaño del campo, si admite nulos...
-
-<script id="asciicast-bc8O8iC56qHQ33JnAuvjC1EBT" src="https://asciinema.org/a/bc8O8iC56qHQ33JnAuvjC1EBT.js" async data-size="medium"></script>
-
-Como resultado, se generará una clase `Contacto` dentro de la carpeta `src/Entity`. El código queda como sigue:
-
-```php
-<?php
-namespace App\Entity;
-
-use App\Repository\ContactoRepository;
-use Doctrine\ORM\Mapping as ORM;
-
-#[ORM\Entity(repositoryClass: ContactoRepository::class)]
-class Contacto
-{
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $nombre = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $telefono = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getNombre(): ?string
-    {
-        return $this->nombre;
-    }
-
-    public function setNombre(string $nombre): static
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    public function getTelefono(): ?string
-    {
-        return $this->telefono;
-    }
-
-    public function setTelefono(string $telefono): static
-    {
-        $this->telefono = $telefono;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-}
-
-```
-
-Como podemos observar, el campo `codigo` que usábamos en nuestra base de datos de prueba lo hemos reemplazado por un `id` autonumérico que se genera automáticamente como clave principal de la clase. Por lo tanto, sólo hemos tenido que especificar el `nombre`, `teléfono` y `e­mail`, de tipo **string**.
-
-En cuanto a los tipos de datos que podemos especificar, si pulsamos `?` e `Intro` cuando vayamos a especificar el tipo de dato, veremos un listado completo de los tipos disponibles (también lo podéis consultar [aquí](https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/reference/basic-mapping.html#doctrine-mapping-types)). Lo habitual será trabajar con cadenas de texto de una longitud determinada (`string`), textos ilimitados (`text`), enteros (`integer`), booleanos (`boolean`), reales (`float`), fechas (`date`, `time` o `datetime`, dependiendo de lo que queramos almacenar)...
-
-### 2.3.1 Campos calculados
-
-Se pueden crear campos calculados en las entidades simplemente creando un getter para dicho campo. Por ejemplo queremos crear una campo que devuelva un número random entre 1 y 10:
-
-```php
-<?php
-public function getRandom(): int
-{	
-	return rand(1,10);
-}
-```
-
-En este caso no está ligado a ningún campo en el esquema de la entidad.
-
-## 2.3 Generación del esquema
-
-Una vez hemos definida la entidad, podemos generar la correspondiente tabla en la base de datos. Para ello, escribimos este comando:
-
-```bash
-php bin/console make:migration
-```
-
-Lo que hace este comando es cotejar los cambios entre nuestro modelo de entidades y el esquema de la base de datos, y generar un archivo PHP que se encargará de volcar esos cambios a la base de datos. Por consola se nos informará de dónde está este archivo para que lo comprobemos (estará en la carpeta `src/Migrations`), y si todo es correcto, ejecutando este otro comando se reflejarán los cambios en la base de datos:
-
-```bash
-php bin/console doctrine:migration:migrate
-```
-
-![1549382168090](/symfony-contactos-teoria/assets/1549382168090.png)
-
-## 2.4 Editar entidades
+## 3.1 Editar entidades
 
 ¿Qué pasa si, tras crear una entidad, queremos modificar su estructura? Podemos editar la clase de la entidad manualmente para añadir, modificar o borrar campos, pero también podemos volver a ejecutar el comando `make:entity`, indicar el mismo nombre de clase que queremos modificar, y especificar los nuevos campos que queramos añadir (en el caso de que lo que queramos sea añadir campos).
 Después de definir los cambios en la(s) entidad(es) deseada(s), deberemos generar una nueva migración con los comandos vistos en el subapartado anterior.
 
-## 2.5 Establecer claves primarias
+## 3.2 Operaciones contra la base de datos
 
-Por defecto, hemos visto que Doctrine agrega un campo id a las entidades, que es autonumérico y actúa como clave primaria. En el caso de que no queramos que sea así, y prefiramos elegir otro campo no autonumérico como clave primaria, debemos seguir estos pasos:
-
-* Eliminar el atributo id y su getter correspondiente de la entidad
-
-* Añadir la siguiente anotación al atributo que hayamos elegido como clave primaria:
-
-  ```php
-  <?php
-  /**
-  * @ORM\Id()
-  * ...
-  */
-  private $nombreCampo;
-  ```
-
-En el caso de que sea una clave primaria compuesta por más de un campo, deberemos añadir esta anotación en cada campo que forme parte de la clave primaria.
-
-## 2.6 Operaciones contra la base de datos
-
-<iframe width="960" height="540" src="https://www.youtube.com/embed/NO7dJb44rcM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-Ahora que ya hemos visto cómo definir entidades simples, veamos cómo realizar operaciones con ellas, tales como inserciones, borrados, modificaciones y consultas. Para realizar estas operaciones, nos valdremos de un objeto muy importante en Doctrine, su `entity manager`, a través del cual haremos las inserciones, borrados, etc. También utilizaremos el repositorio de la entidad correspondiente, para realizar las búsquedas.
-
-### 2.6.1 Insertar objetos
+### 3.2.1 Insertar objetos
 
 Si queremos añadir objetos nuevos a nuestra base de datos, basta con que creemos un objeto de la entidad correspondiente en el método oportuno, y llamemos al método `persist` y `flush` del `entity manager` de Doctrine.
-Por ejemplo, para probar, vamos a crear un controlador en nuestra clase `ContactoController` asociado a una ruta `/contacto/insertar`, que de momento será de pruebas hasta que hagamos un formulario de inserción. Dentro de este método, creamos los objetos `Contacto` a partir del array que hemos creado anteriormente, obtenemos el `entity manager` de Doctrine y persistimos el objeto:
+Por ejemplo, para probar, vamos a crear un controlador en nuestra clase `ContactoController` asociado a una ruta `/contacto/insertar`, que de momento será de pruebas hasta que hagamos un formulario de inserción. Dentro de este método, creamos los objetos `Contacto` a partir del array que hemos creado anteriormente, obtenemos el `entity manager` de Doctrine y persistimos el objeto.
 
-![image-20220109165702135](/symfony-contactos-teoria/assets/image-20220109165702135.png)
+Por ejemplo, vamos a crear una ruta `/contacto/nuevo/manuel/99999/v@v.com`
 
->-alert- Es **importante** que ubiquemos este controlador **antes controlador `ficha`**, ya que de lo contrario se disparará este último al escribir la URL `/contacto/insertar`.
+![image-20260701125217553](/symfony-contactos-teoria/static/assets/image-20260701125217553.png)
 
-Si accedemos desde el navegador a la ruta http://127.0.0.1:8080/contacto/insertar, podremos ver el resultado en la tabla contacto de nuestra base de datos:
+### 3.2.2 Consultas más avanzadas
 
-![1549382698610](/symfony-contactos-teoria/assets/1549382698610.png)
+Con los métodos de consulta anteriores podemos realizar consultas que se limitan a comprobar si uno o varios campos de un objeto son iguales a unos criterios de búsqueda determinados. Pero, ¿cómo podríamos, por ejemplo, buscar los contactos cuyo nombre empiece por un cierto texto, o los libros de más de 100 páginas? Para este tipo de consultas, necesitamos ampliar el repositorio de nuestra entidad.
 
+Por ejemplo, para nuestra entidad `Contacto`, imaginemos que queremos buscar los contactos cuyo nombre empieza un cierto texto. Para conseguir esto, necesitamos editar el repositorio de la entidad, que está en `src/Repository/ContactoRepository.php`. Este archivo contiene comentados un par de métodos de prueba que podríamos definir para ampliar las capacidades de la entidad.
 
-
-Es **importante** recalcar que la llamada a `persist` por sí sola no actualiza la base de datos, sino que indica que se quiere persistir el objeto indicado. Es la llamada a `flush` la que hace efectiva esa persistencia.
-
-### 2.6.2 Obtener objetos
-
-Los objetos siempre se obtienen de un repositorio, pero no hace falta especificarlo como hacíamos hasta ahora sino que lo hace automáticamente Doctrine:
+En nuestro caso, vamos a añadir un método que se encargará de obtener los contactos cuyo nombre empiece por un texto determinado que le pasemos como parámetro:
 
 ```php
-<?php
- $repositorio = $doctrine->getRepository(Contacto::class);
+public function startsWith($value): array
+{
+    return $this->createQueryBuilder('c')
+        ->andWhere('c.nombre LIKE :val')
+        ->setParameter('val', $value . '%')
+        ->orderBy('c.id', 'ASC')
+        ->getQuery()
+        ->getResult();
+    // La consula en sql sería SELECT nombre FROM contactos WHERE nombre LIKE ('$value%')
+}
 ```
 
-donde lo único que varía es el nombre de la clase.
+Creamos el controlador:
 
-A la hora de obtener objetos de una tabla, existen diferentes métodos que podemos emplear. Por ejemplo:
+```php
+#[Route('/contacto/empieza/{letra}', name: 'empieza-por')]
+public function empieza(ManagerRegistry $doctrine, Request $request, string $letra)
+{
+    $repositorio = $doctrine->getRepository(Contacto::class);
+    $contactos = $repositorio->startsWith($letra);
+    return $this->render('lista_contactos.html.twig', [
+        'contactos' => $contactos,
+        'letra' => $letra,
+    ]);
+}
+```
 
-* El método `find` localiza el objeto por la clave primaria (normalmente el id) que se le pasa como parámetro. Así buscaríamos el contacto con id 1:
+Y la plantilla
 
-  ```php
-  <?php
-  $contacto = $repositorio->find(1);
-  ```
-
-* El método `findOneBy` localiza un objeto que cumpla los criterios de búsqueda pasados como parámetro. Así buscaríamos el contacto cuyo teléfono sea “900110011”:
-
-  ```php
-  <?php
-  $contacto = $repositorio->findOneBy(["telefono" => "54565859"]);
-  ```
-
-  En el caso de querer definir más criterios de búsqueda, se pasarían uno tras otro en el array, separados por comas.
-
-* El método `findBy` localiza todos los objetos que cumplan los criterios de búsqueda pasados como parámetro. Esta instrucción es como la anterior, pero devuelve un array de contactos con todos los resultados coincidentes:
-
-  ```php
-  <?php
-  $contactos = $repositorio->findBy(["telefono" => "54565859"]);
-  ```
-
-* El método `findAll` (sin parámetros), obtiene todos los objetos de la colección.
-
-  ```php
-  <?php
-  $contactos = $repositorio->findAll();
-  ```
-  
-
-Todos estos métodos se obtienen a partir de un repositorio de la clase, que viene a ser algo así como un asistente que nos ayuda a obtener objetos que pertenezcan a esa clase.
-
-Veamos un ejemplo con nuestra clase `ContactoController`: vamos a modificar nuestro método ficha para que, en lugar de buscar en la base de datos de prueba que hemos venido empleando en sesiones anteriores, busque por id en la base de datos real. Para ello, obtenemos el repositorio de nuestra clase `Contacto` y buscamos (`find`) el contacto con el id que hemos recibido como parámetro:
-
-![image-20220109165736024](/symfony-contactos-teoria/assets/image-20220109165736024.png)
-
-#### 2.6.2.1 Consultas más avanzadas
-
-Con los métodos de consulta anteriores podemos realizar consultas que se limitan a comprobar si uno o varios campos de un objeto son iguales a unos criterios de búsqueda determinados. Pero, ¿cómo podríamos, por ejemplo, buscar los contactos cuyo nombre contenga un cierto texto, o los libros de más de 100 páginas? Para este tipo de consultas, necesitamos ampliar el repositorio de nuestra entidad.
-
-Por ejemplo, para nuestra entidad `Contacto`, imaginemos que queremos buscar los contactos cuyo nombre concierta un cierto texto. Para conseguir esto, necesitamos editar el repositorio de la entidad, que está en `src/Repository/ContactoRepository.php`. Este archivo contiene comentados un par de métodos de prueba que podríamos definir para ampliar las capacidades de la entidad.
-
-En nuestro caso, vamos a añadir un método que se encargará de obtener los contactos cuyo nombre contenga un texto determinado que le pasemos como parámetro:
-
-![image-20220109165749027](/symfony-contactos-teoria/assets/image-20220109165749027.png)
+```php
+{% extends 'base.html.twig' %}
+{% block body %}
+	<h1>Contactos de la letra
+		{{ letra }}</h1>
+	{% for contacto in contactos %}
+		{{ include ('partials/_contacto.html.twig', {'contacto': contacto})}}
+	{% endfor %}
+{% endblock %}
+```
 
 Empleamos el **query builder** de Doctrine para construir la consulta con esa sintaxis específica. En primer lugar, definimos un elemento (alias) que hemos llamado `c` (de `Contacto`) que usaremos para referenciar las propiedades de los contactos, por ejemplo, en la cláusula `where`. Lo que viene a hacer este código es buscar aquellos contactos `c` cuyo nombre sea como el parámetro `text`, y a continuación especifica que dicho parámetro `text` es igual al parámetro que recibimos en el método, encerrado entre símbolos `'%'`, para indicar que da igual lo que haya delante o detrás del texto.
 
 Ahora, ya podríamos utilizar este método desde donde lo necesitemos. Por ejemplo, podemos modificar el método buscar de `ContactoController` para que busque contactos por nombre empleando este nuevo método:
-
-![image-20220109165805283](/symfony-contactos-teoria/assets/image-20220109165805283.png)
 
 Si, por ejemplo, quisiéramos buscar por una propiedad numérica (por ejemplo, personas cuya edad sea mayor que una dada), usaríamos una sintaxis como esta (también muy similar a SQL):
 ```php
@@ -291,13 +92,13 @@ Alternativamente, también podemos emplear un lenguaje llamado `DQL` (Doctrine Q
 
 ```php
 <?php
-public function findByName($text): array
+public function startsWith($text): array
 {
 
     $entityManager = $this->getEntityManager();
     $query = $entityManager->createQuery(
         'SELECT c FROM App\Entity\Contacto c WHERE c.nombre LIKE :text'
-    )->setParameter('text', '%' . $text . '%');
+    )->setParameter('text', $text . '%');
 
     return $query->execute();        
 }
@@ -307,7 +108,13 @@ Y, como tercera vía, también podemos emplear SQL estándar, pero en este caso 
 
 Aquí tenéis enlaces para consultar información adicional tanto de [Query Builder](https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/query-builder.html) como del lenguaje [DQL](https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/dql-doctrine-query-language.html).
 
-### 2.6.3 Actualizar objetos
+También se puede usar métodos con nombre de campos para buscar por campos de una entidad:
+
+* `$contactos = $repositorio->findByEmail($email);` Encuentra  varios con ese correo
+* `$contactos = $repositorio->findOneByEmail($email);` Encuentra sólo uno con ese correo
+* Lo mismo se aplica para los campos `nombre` y `telefono`
+
+### 3.2.3 Actualizar objetos
 
 Para actualizar un objeto en una base de datos, debemos seguir tres pasos:
 
@@ -317,51 +124,25 @@ Para actualizar un objeto en una base de datos, debemos seguir tres pasos:
 
 Si, por ejemplo, quisiéramos actualizar los datos de un contacto haríamos esto:
 
-![image-20220109165827535](/symfony-contactos-teoria/assets/image-20220109165827535.png)
+![image-20260702083620019](/symfony-contactos-teoria/static/assets/image-20260702083620019.png)
 
-### 2.6.4 Borrar objetos
+### 3.2.4 Borrar objetos
 
 El borrado de objetos es similar a la actualización: debemos obtener el objeto también, pero después llamamos al método `remove` para borrarlo, y finalmente a `flush`. 
 
 Por ejemplo:
 
-![image-20220109165850835](/symfony-contactos-teoria/assets/image-20220109165850835.png)
+![image-20260702084004000](/symfony-contactos-teoria/static/assets/image-20260702084004000.png)
 
 Nuevamente, tanto en la actualización como en el borrado, el método `flush` puede provocar una **excepción** si la operación no ha podido llevarse a cabo. Debemos tenerlo en cuenta para capturarla y generar la respuesta oportuna.
 
-## 2.6.5 Recuperar múltiples objetos.
-Vamos a modicar la página de portada para que muestre una lista con todos los contactos:
-```php
-    #[Route('/', name: 'inicio')]
-    public function inicio(ManagerRegistry $doctrine): Response
-    {
-        $repositorio = $doctrine->getRepository(Contacto::class);
-        $contactos = $repositorio->findAll();
-        //Mostramos la plantilla pasándole los contactos
-        return $this->render("inicio.html.twig", ["contactos" => $contactos]);
-    }
-```
-Y modificamos la plantilla `inicio.html.twig` para listar los contactos
-```twig
-{% extends 'base.html.twig' %}
-{% block body %}
-	<h1>Contactos</h1>
-	<h2>Bienvenido a la web de contactos.</h2>
-	<p>Página de inicio</p>
-	{% for contacto in contactos %}
-		 {{ include ('partials/datos_contacto.html.twig', {'contacto': contacto})}}
-	{% endfor %}
-{% endblock %}
-```
-## 2.7 Relaciones entre entidades
-
-<iframe width="960" height="540" src="https://www.youtube.com/embed/z7RhQp9KpsE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+## 3.3 Relaciones entre entidades
 
 Hasta ahora las operaciones que hemos hecho se han centrado en una única tabla o entidad (la entidad/tabla de `contactos`). Veamos ahora cómo podemos trabajar con más de una `tabla/entidad` que estén relacionadas entre sí.
 
 Existen dos tipos principales de relaciones entre entidades:
 
-* **Muchos a uno**: en este tipo se englobarían las relaciones “uno a muchos”, “muchos a uno” y “uno a uno”, ya que en cualquiera de los tres casos, la relación se refleja añadiendo una clave ajena en una de las dos entidades que referencie a la otra.
+* **Muchos a uno**: en este tipo se englobarían las relaciones “uno a muchos”, “muchos a uno” y “uno a uno”, ya que en cualquiera de los tres casos, la relación se refleja añadiendo una clave ajena en una de las entidades que referencie a la otra.
 * **Muchos a muchos**: en este tipo de relaciones, se necesita de una tabla adicional para reflejar la relación entre las entidades.
 
 Vamos a definir una relación muchos a uno en nuestra base de datos de contactos. Para ello, vamos a crear primero una entidad llamada `Provincia`, que sólo contenga un `id` autogenerado y un `nombre` (string):
@@ -394,46 +175,131 @@ php bin/console make:migration
 php bin/console doctrine:migration:migrate
 ```
 
+> -hint- Los comandos  se pueden **abreviar**. Por ejemplo, `doctrine:migration:migrate` se convierte en `d:m:m` , `make:migration` en `m:mi`. Solo se pueden abreviar hasta que no produzcan ambigüedad.
+>
+> Por ejemplo, si intentamos `m:m` salta la siguiente información:
+>
+> ![image-20260702084619368](/symfony-contactos-teoria/static/assets/image-20260702084619368.png)
+
 Ya tendremos el nuevo campo añadido en nuestra entidad `Contacto` y a la tabla contacto de la base de datos:
+
+![1549386995547](/symfony-contactos-teoria/static/assets/1549386995547-1782975215910-1.png)
 
 ```php
 <?php
 //src/Entity/Contacto
-/**
-* @ORM\ManyToOne(targetEntity="App\Entity\Provincia")
-* @ORM\JoinColumn(nullable=false)
-*/
-private $provincia;
+#[ORM\ManyToOne(inversedBy: 'contactos')]
+private ?Provincia $provincia = null;
 ```
 
-![1549386995547](/symfony-contactos-teoria/assets/1549386995547.png)
+de tal forma que podemos obtener la provincia de un contacto y de ahí, cualquier campo:
 
-### 2.7.1 Trabajar con entidades relacionadas
+```php
+$contacto->getProvincia()->getNombre();
+```
 
-Ahora que ya sabemos relacionar entidades entre sí, ¿cómo podemos insertar una entidad que depende de otra, o acceder a los datos de una entidad desde la otra?
+o en un plantilla
 
-#### 2.7.1.1 Inserción de entidades relacionadas
+```twig
+{{ contacto.provicia.nombre}}
+```
 
-Por ejemplo, si quisiéramos insertar un contacto asignándole una provincia:
+y en `Provincia`
 
-* Si la provincia no existe, creamos un objeto de tipo `Provincia`, y después otro de tipo `Contacto`, estableciendo como provincia el objeto `Provincia` recién creado:
-  ![image-20220109165914273](/symfony-contactos-teoria/assets/image-20220109165914273.png)
-  
-* Ahora modificamos la plantilla `datos_contacto.html.twig`
-  ![image-20220109165941038](/symfony-contactos-teoria/assets/image-20220109165941038.png)
-  
-  Añadiendo la provincia mediante`contacto.provincia.nombre`
-  
-* Si la provincia sí existe, la buscamos en la base de datos (con algún método `find` o similar) y después creamos el objeto `Contacto` y le asignamos ese objeto `Provincia`:
-  ![image-20220109170043888](/symfony-contactos-teoria/assets/image-20220109170043888.png)
-  
-#### 2.7.1.2 Búsqueda de entidades relacionadas
+```php
+//src/Entity/Provincia
+/**
+ * @var Collection<int, Contacto>
+ */
+#[ORM\OneToMany(targetEntity: Contacto::class, mappedBy: 'provincia')]
+private Collection $contactos;
+```
 
-En el caso de que hagamos una búsqueda de una entidad que está relacionada con otra, el acceso a esa otra entidad es inmediato desde la primera. Por ejemplo, si quisiéramos saber el nombre de la provincia del contacto con código 1, haríamos algo así:
+De tal forma que podemos acceder a todos los contactos de una provincia:
+
+```php
+provincia->getContactos()
+```
+
+ y en twig
+
+```twig
+{% for contacto in provincia.contactos %}
+```
+
+
+
+### 3.3.1 Modificar plantilla
+
+Vamos a mostrar el campo `provincia` del `contacto`
+
+> -warning-
+>
+> Aseguraos que tenéis registros en la tabla `provincias` y actualizado el campo `id_provincia` el `contacto`
+
+```twig
+<ul>
+	<li>
+		<strong>{{ contacto.nombre }}</strong>
+	</li>
+	<li>
+		<strong>Teléfono</strong>:
+		{{ contacto.telefono }}</li>
+	<li>
+		<strong>E-mail</strong>:
+		{{ contacto.email }}</li>
+	<li>
+		<strong>Provincia</strong>:
+		{{ contacto.provincia.nombre ?? 'Sin provincia' }}</li>
+</ul>
+
+```
+
+### 3.3.2 Modificar formulario
+
+Ahora nos falta añadir el campo `provincia` en el formulario de contactos.
 
 ```php
 <?php
-$repositorio = $this->getDoctrine()->getRepository(Contacto::class);
-$contacto = $repositorio->find(1);
-$nombreProvincia = $contacto->getProvincia()->getNombre();
+
+namespace App\Form;
+
+use App\Entity\Contacto;
+use App\Entity\Provincia;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
+class ContactoFormType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('nombre')
+            ->add('telefono')
+            ->add('email', EmailType::class, array('label' => 'Correo electrónico'))
+            ->add('provincia', EntityType::class, [
+                'class' => Provincia::class,
+                'choice_label' => 'nombre',
+                'label' => 'Provincia',
+            ])
+            ->add('save', SubmitType::class, array('label' => 'Enviar'));
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Contacto::class,
+        ]);
+    }
+}
+
 ```
+
+El campo provincia es de tipo `EntityType`, la entidad subyacente es `Provincia`, el texto que el usuario ve es `nombre` y la etiqueta que ve el usuario es `Provincia`
+
+Ahora comprobad que los controladores funcionan igualmente sin haber cambiado una sola línea de código.
+
