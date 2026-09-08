@@ -34,6 +34,9 @@ Por ejemplo, para nuestra entidad `Contacto`, imaginemos que queremos buscar los
 
 En nuestro caso, vamos a añadir un método que se encargará de obtener los contactos cuyo nombre empiece por un texto determinado que le pasemos como parámetro:
 
+Es **importante** recalcar que la llamada a `persist` por sí sola no actualiza la base de datos, sino que indica que se quiere persistir el objeto indicado. Es la llamada a `flush` la que hace efectiva esa persistencia.
+
+
 ```php
 public function startsWith($value): array
 {
@@ -49,6 +52,7 @@ public function startsWith($value): array
 
 Creamos el controlador:
 
+donde lo único que varía es el nombre de la clase, `Contacto` en este caso.
 ```php
 #[Route('/contacto/empieza/{letra}', name: 'empieza-por')]
 public function empieza(ManagerRegistry $doctrine, Request $request, string $letra)
@@ -60,9 +64,9 @@ public function empieza(ManagerRegistry $doctrine, Request $request, string $let
         'letra' => $letra,
     ]);
 }
-```
 
 Y la plantilla
+
 
 ```php
 {% extends 'base.html.twig' %}
@@ -74,6 +78,39 @@ Y la plantilla
 	{% endfor %}
 {% endblock %}
 ```
+
+  ```php
+  <?php
+  $contacto = $repositorio->find(1);
+  ```
+
+* El método `findOneBy` localiza un objeto que cumpla los criterios de búsqueda pasados como parámetro. Así buscaríamos el contacto cuyo teléfono sea “900110011”:
+
+  ```php
+  <?php
+  $contacto = $repositorio->findOneBy(["telefono" => "54565859"]);
+  ```
+
+  En el caso de querer definir más criterios de búsqueda, se pasarían uno tras otro en el array, separados por comas.
+
+* El método `findBy` localiza todos los objetos que cumplan los criterios de búsqueda pasados como parámetro. Esta instrucción es como la anterior, pero devuelve un array de contactos con todos los resultados coincidentes:
+
+  ```php
+  <?php
+  $contactos = $repositorio->findBy(["telefono" => "54565859"]);
+  ```
+
+* El método `findAll` (sin parámetros), obtiene todos los objetos de la colección.
+
+  ```php
+  <?php
+  $contactos = $repositorio->findAll();
+  ```
+Todos estos métodos se obtienen a partir de un repositorio de la clase, que viene a ser algo así como un asistente que nos ayuda a obtener objetos que pertenezcan a esa clase.
+
+Veamos un ejemplo con nuestra clase `ContactoController`: vamos a modificar nuestro método ficha para que, en lugar de buscar en la base de datos de prueba que hemos venido empleando en sesiones anteriores, busque por id en la base de datos real. Para ello, obtenemos el repositorio de nuestra clase `Contacto` y buscamos (`find`) el contacto con el id que hemos recibido como parámetro:
+
+![image-20220109165736024](/symfony-contactos-teoria/assets/image-20220109165736024.png)
 
 Empleamos el **query builder** de Doctrine para construir la consulta con esa sintaxis específica. En primer lugar, definimos un elemento (alias) que hemos llamado `c` (de `Contacto`) que usaremos para referenciar las propiedades de los contactos, por ejemplo, en la cláusula `where`. Lo que viene a hacer este código es buscar aquellos contactos `c` cuyo nombre sea como el parámetro `text`, y a continuación especifica que dicho parámetro `text` es igual al parámetro que recibimos en el método, encerrado entre símbolos `'%'`, para indicar que da igual lo que haya delante o detrás del texto.
 
@@ -122,9 +159,42 @@ Para actualizar un objeto en una base de datos, debemos seguir tres pasos:
 * Modificar los datos necesarios con los respectivos `setters` del objeto
 * Hacer un `flush` para actualizar los cambios en la base de datos.
 
-Si, por ejemplo, quisiéramos actualizar los datos de un contacto haríamos esto:
+Si, por ejemplo, quisiéramos actualizar el `nombre` de un contacto haríamos esto:
+
 
 ![image-20260702083620019](/symfony-contactos-teoria/static/assets/image-20260702083620019.png)
+
+```php
+// El valor por defecto del parámetro `codigo` es 1
+#[Route('/contacto/update/{codigo?1}', name: 'update')]
+public function update(ManagerRegistry $doctrine, $codigo): Response
+{
+    $entityManager = $doctrine->getManager();
+    
+    // Se coge el repositorio de la entidad Contacto o de la que se quiera
+    $repositorio = $doctrine->getRepository(Contacto::class);
+    
+    // Se busca el contacto que tenga el id = $codigo
+    // El método `find` siempre busca por la clave de la tabla, que suele ser `id`
+    $contacto = $repositorio->find($codigo);
+    
+    // Cambiamos un dato, por ejemplo el nombre
+    $contacto->setNombre("Nombre cambiado");
+    
+    // Guardamos de forma temporal
+    $entityManager->persist($contacto);
+    
+    try{
+        // y no nos olvidemos de guardar en la base de datos
+        $entityManager->flush();
+        
+        // Mostramos la plantilla pasándole el contacto como parámetro
+        return $this->render("ficha_contacto.html.twig", ["contacto" => $contacto]);
+    }catch (\Exception $e){
+        return new Response("Se ha producido un error: " . $e->getMessage());
+    }
+}
+```
 
 ### 3.2.4 Borrar objetos
 
