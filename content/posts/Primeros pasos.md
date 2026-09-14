@@ -103,7 +103,7 @@ Por ejemplo, si visitas la página [http://127.0.0.1:8080/contacto/2](http://127
 
 ### 1.2.1 Base de datos
 
-> -info-Un **ORM (Object Relational Mapping)** es un framework encargado de tratar con una base de datos relacional (conectar con ella, realizar operaciones de consulta, inserción, etc.), de forma que, de cara a la aplicación, se convierten a objetos todos los elementos que se extraigan de la base de datos, y viceversa (los objetos de la aplicación se transforman en registros de la base de datos, llegado el caso).
+> -info-Un **ORM (Object Relational Mapping)** es una librería encargada de tratar con una base de datos relacional (conectar con ella, realizar operaciones de consulta, inserción, etc.), de forma que, de cara a la aplicación, se convierten a objetos todos los elementos que se extraigan de la base de datos, y viceversa (los objetos de la aplicación se transforman en registros de la base de datos, llegado el caso).
 >
 > De esta forma, el ORM se encargará de realizar esta conversión o mapeo automáticamente por nosotros. Definiendo una serie de reglas, indicaremos qué tablas de la base de datos relacional se corresponden con qué clases de nuestro modelo, y qué campos de cada tabla se corresponden con qué atributos de cada clase. A partir de ahí, el ORM se encargará de extraer la información de la base de datos y crear los objetos correspondientes, o de convertir los objetos con sus atributos en registros de la base de datos, con sus correspondientes columnas.
 >
