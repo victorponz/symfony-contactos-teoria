@@ -113,7 +113,7 @@ composer require symfony/orm-pack
 > Para poder utilizar Doctrine, tenemos que indicar cómo conectar al servidor de base de datos que vayamos a utilizar. Estos parámetros de conexión se pueden configurar en el archivo `.env` de nuestro proyecto. Este es un archivo donde se definen ciertas variables propias de entorno, que luego se procesan y se convierten en variables reales. En nuestro caso, definimos una llamada `DATABASE_URL`, con una `URL` donde se especifican tanto la dirección y puerto de conexión a la base de datos, como el `login` y `password` necesarios para acceder, y el nombre de la base de datos a la que conectar. Por ejemplo, para una base de datos MySQL, la estructura general será ésta:
 >
 > ```properties
-> DATABASE_URL=mysql://root:sa@127.0.0.1:3306/contactos
+> DATABASE_URL="mysql://root:sa@127.0.0.1:3306/contactos2?serverVersion=8.0.32&charset=utf8mb4"
 > ```
 
 Usaremos Doctrine para crear la base de datos, aunque también se puede hacer directamente con [phpmyadmin](http://127.0.0.1/phpmyadmin/)
