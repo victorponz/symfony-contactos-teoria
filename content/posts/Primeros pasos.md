@@ -425,6 +425,31 @@ Empleamos la notación de la doble llave `{{ ... }}` para ubicar variables, que 
 
 Al llamar al método `render` le pasamos a la plantilla la variable `$contacto` y en la plantilla, accedemos a ella mediante `{{contacto.nombre-del-campo}}`
 
+El flujo de la petición es este:
+
+```mermaid
+flowchart LR
+    A[Cliente<br/>Navegador] -->|1. Petición HTTP| B[Route<br/>#Route en el Controller<br/>o config/routes.yaml]
+    B -->|2. Resuelve ruta y parámetros| C[Controller<br/>método de acción]
+    C -->|3. Pide datos| D[Data<br/>Entity / Repository / Doctrine]
+    D -->|4. Devuelve datos| C
+    C -->|5. Pasa datos al render| E[Template<br/>Twig .html.twig]
+    E -->|6. HTML final| F[Response]
+    F -->|7. Respuesta HTTP| A
+
+    style B fill:#fce7f3
+    style C fill:#dbeafe
+    style D fill:#dcfce7
+    style E fill:#fef3c7
+```
+
+**Idea clave del flujo en Symfony:**
+
+- **Route**: recibe la URL y decide qué Controller/acción ejecutar (ya sea por anotación `#[Route]` en el propio Controller o en `config/routes.yaml`).
+- **Controller**: orquesta la petición, pide los datos que necesita y elige qué plantilla renderizar.
+- **Data**: normalmente vía Doctrine (Entity + Repository), aunque puede venir de un Service, una API externa, etc.
+- **Template**: Twig recibe las variables del Controller (`return $this->render('...', ['datos' => $datos])`) y genera el HTML final que se devuelve como `Response`.
+
 ### 1.3.2 Estructuras de control en plantillas
 
 La plantilla anterior es un ejemplo para añadir partes dinámicas en el contenido de la misma, pero está algo *coja*: ¿qué pasa si no encontramos el contacto en la lista?. Si no adoptamos ninguna solución, se mostrará un error 500
