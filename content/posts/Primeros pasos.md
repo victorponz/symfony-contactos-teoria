@@ -274,6 +274,14 @@ INSERT INTO `contacto` (`id`, `nombre`, `telefono`, `email`) VALUES
 Y modificamos el controlador, para que ahora nos muestre los datos del contacto en la base de datos pasado como parámetro:
 
 ```php
+// Hay que usar estas dos clases
+use App\Entity\Contacto;
+use Doctrine\Persistence\ManagerRegistry;
+```
+
+Y este este es el controlador:
+
+```php
 // Si queremos validar un parámetro, su usa 'requeriments' que es una expresión regular. En este caso, solo permite números de longitud variable
 #[Route('/contacto/{codigo}', name: 'contacto', requirements: ['codigo' => '[0-9]+'])]
 // Symfony inyecta la dependencia ManagerRegistry automáticamente
