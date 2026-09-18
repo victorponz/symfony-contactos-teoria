@@ -427,21 +427,7 @@ Al llamar al método `render` le pasamos a la plantilla la variable `$contacto` 
 
 El flujo de la petición es este:
 
-```mermaid
-flowchart LR
-    A[Cliente<br/>Navegador] -->|1. Petición HTTP| B[Route<br/>#Route en el Controller<br/>o config/routes.yaml]
-    B -->|2. Resuelve ruta y parámetros| C[Controller<br/>método de acción]
-    C -->|3. Pide datos| D[Data<br/>Entity / Repository / Doctrine]
-    D -->|4. Devuelve datos| C
-    C -->|5. Pasa datos al render| E[Template<br/>Twig .html.twig]
-    E -->|6. HTML final| F[Response]
-    F -->|7. Respuesta HTTP| A
-
-    style B fill:#fce7f3
-    style C fill:#dbeafe
-    style D fill:#dcfce7
-    style E fill:#fef3c7
-```
+![image-20260918085041597](/symfony-contactos-teoria/assets/image-20260918085041597.png)
 
 **Idea clave del flujo en Symfony:**
 
