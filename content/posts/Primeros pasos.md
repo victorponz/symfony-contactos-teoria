@@ -624,6 +624,10 @@ Usuario → Controlador → Modelo (consulta BD)
 Vamos a modificar la página de portada para que muestre una lista con todos los contactos:
 
 ```php
+....
+use App\Entity\Contacto;
+use Doctrine\Persistence\ManagerRegistry;
+...
 #[Route('/', name: 'inicio')]
 public function inicio(ManagerRegistry $doctrine): Response
 {
