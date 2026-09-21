@@ -1,5 +1,5 @@
 ---
-typora-copy-images-to: ../../static/assets/
+typora-copy-images-to: ../../assets/
 typora-root-url: ../../../
 layout: post
 slug: object-relational-mapping
@@ -24,7 +24,7 @@ Por ejemplo, para probar, vamos a crear un controlador en nuestra clase `Contact
 
 Por ejemplo, vamos a crear una ruta `/contacto/nuevo/manuel/99999/v@v.com`
 
-![image-20260701125217553](/symfony-contactos-teoria/static/assets/image-20260701125217553.png)
+![image-20260701125217553](/symfony-contactos-teoria/assets/image-20260701125217553.png)
 
 ### 3.2.2 Consultas más avanzadas
 
@@ -162,7 +162,7 @@ Para actualizar un objeto en una base de datos, debemos seguir tres pasos:
 Si, por ejemplo, quisiéramos actualizar el `nombre` de un contacto haríamos esto:
 
 
-![image-20260702083620019](/symfony-contactos-teoria/static/assets/image-20260702083620019.png)
+![image-20260702083620019](/symfony-contactos-teoria/assets/image-20260702083620019.png)
 
 ```php
 // El valor por defecto del parámetro `codigo` es 1
@@ -202,7 +202,7 @@ El borrado de objetos es similar a la actualización: debemos obtener el objeto 
 
 Por ejemplo:
 
-![image-20260702084004000](/symfony-contactos-teoria/static/assets/image-20260702084004000.png)
+![image-20260702084004000](/symfony-contactos-teoria/assets/image-20260702084004000.png)
 
 Nuevamente, tanto en la actualización como en el borrado, el método `flush` puede provocar una **excepción** si la operación no ha podido llevarse a cabo. Debemos tenerlo en cuenta para capturarla y generar la respuesta oportuna.
 
@@ -249,11 +249,11 @@ php bin/console doctrine:migration:migrate
 >
 > Por ejemplo, si intentamos `m:m` salta la siguiente información:
 >
-> ![image-20260702084619368](/symfony-contactos-teoria/static/assets/image-20260702084619368.png)
+> ![image-20260702084619368](/symfony-contactos-teoria/assets/image-20260702084619368.png)
 
 Ya tendremos el nuevo campo añadido en nuestra entidad `Contacto` y a la tabla contacto de la base de datos:
 
-![1549386995547](/symfony-contactos-teoria/static/assets/1549386995547-1782975215910-1.png)
+![1549386995547](/symfony-contactos-teoria/assets/1549386995547-1782975215910-1.png)
 
 ```php
 <?php
