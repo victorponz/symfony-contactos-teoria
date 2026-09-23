@@ -24,7 +24,25 @@ Por ejemplo, para probar, vamos a crear un controlador en nuestra clase `Contact
 
 Por ejemplo, vamos a crear una ruta `/contacto/nuevo/manuel/99999/v@v.com`
 
-![image-20260701125217553](/symfony-contactos-teoria/assets/image-20260701125217553.png)
+```php
+#[Route('/contacto/modificar/{id}/{nombre}', name: 'modificar')]
+public function modificar(ManagerRegistry $doctrine, 
+int $id, 
+string $nombre): Response
+{
+    $contacto = $doctrine->getRepository(Contacto::class)->find($id);
+    $contacto->setNombre($nombre);
+
+    $entityManager = $doctrine->getManager();
+    $entityManager->persist($contacto);
+    $entityManager->flush();
+
+    // Devolvemos como respuesta el html
+    return $this->redirectToRoute('contacto', ['codigo' => $contacto->getId()]);
+}
+```
+
+
 
 ### 3.2.2 Consultas más avanzadas
 
@@ -161,38 +179,21 @@ Para actualizar un objeto en una base de datos, debemos seguir tres pasos:
 
 Si, por ejemplo, quisiéramos actualizar el `nombre` de un contacto haríamos esto:
 
-
-![image-20260702083620019](/symfony-contactos-teoria/assets/image-20260702083620019.png)
-
 ```php
-// El valor por defecto del parámetro `codigo` es 1
-#[Route('/contacto/update/{codigo?1}', name: 'update')]
-public function update(ManagerRegistry $doctrine, $codigo): Response
+#[Route('/contacto/modificar/{id}/{nombre_nuevo}', name: 'modificar')]
+public function modificar(ManagerRegistry $doctrine, 
+int $id, 
+string $nombre_nuevo): Response
 {
+    $contacto = $doctrine->getRepository(Contacto::class)->find($id);
+    $contacto->setNombre($nombre_nuevo);
+
     $entityManager = $doctrine->getManager();
-    
-    // Se coge el repositorio de la entidad Contacto o de la que se quiera
-    $repositorio = $doctrine->getRepository(Contacto::class);
-    
-    // Se busca el contacto que tenga el id = $codigo
-    // El método `find` siempre busca por la clave de la tabla, que suele ser `id`
-    $contacto = $repositorio->find($codigo);
-    
-    // Cambiamos un dato, por ejemplo el nombre
-    $contacto->setNombre("Nombre cambiado");
-    
-    // Guardamos de forma temporal
     $entityManager->persist($contacto);
-    
-    try{
-        // y no nos olvidemos de guardar en la base de datos
-        $entityManager->flush();
-        
-        // Mostramos la plantilla pasándole el contacto como parámetro
-        return $this->render("ficha_contacto.html.twig", ["contacto" => $contacto]);
-    }catch (\Exception $e){
-        return new Response("Se ha producido un error: " . $e->getMessage());
-    }
+    $entityManager->flush();
+
+    // Devolvemos como respuesta el html
+    return $this->redirectToRoute('contacto', ['codigo' => $contacto->getId()]);
 }
 ```
 
