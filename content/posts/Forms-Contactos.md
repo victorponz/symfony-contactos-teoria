@@ -189,6 +189,19 @@ public function editar(ManagerRegistry $doctrine, Request $request, int $codigo)
 }
 ```
 
+**Esta es la plantilla**
+
+```twig
+{% extends 'base.html.twig' %}
+{% block title %}Modificar contacto
+{% endblock %}
+{% block body %}
+	<h1>Modificar contacto</h1>
+	{{ form(formulario) }}
+{% endblock %}
+
+```
+
 Ahora, si accedemos a [http://127.0.0.1:8080/contacto/editar/1](http://127.0.0.1:8080/contacto/editar/1), por ejemplo (suponiendo que tengamos un contacto con `id = 1` en la base de datos), se cargará el formulario con sus datos, y al enviarlo, se modificarán los campos que hayamos cambiado, y se cargará la página de inicio.
 
 ## 2.3 Validación de formularios
