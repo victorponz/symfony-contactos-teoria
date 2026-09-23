@@ -306,7 +306,7 @@ Vamos a mostrar el campo `provincia` del `contacto`
 
 > -warning-
 >
-> Aseguraos que tenéis registros en la tabla `provincias` y actualizado el campo `id_provincia` el `contacto`
+> Aseguraos que tenéis registros en la tabla `provincias` y actualizado el campo `id_provincia` del `contacto`
 
 ```twig
 <ul>
