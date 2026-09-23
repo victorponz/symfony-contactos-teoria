@@ -247,7 +247,7 @@ class Contacto
         return $this->nombre;
     }
 
-    public function setNombre(?string $nombre): self
+    public function setNombre(?string $nombre): static
     {
         $this->nombre = $nombre;
 
@@ -259,7 +259,7 @@ class Contacto
         return $this->telefono;
     }
 
-    public function setTelefono(?string $telefono): self
+    public function setTelefono(?string $telefono): static
     {
         $this->telefono = $telefono;
 
@@ -271,7 +271,7 @@ class Contacto
         return $this->email;
     }
 
-    public function setEmail(?string $email): self
+    public function setEmail(?string $email): static
     {
         $this->email = $email;
 
@@ -289,7 +289,7 @@ Además, en todos los setters hemos de modificar el valor devuelto para que se d
 
 ```php
 <?php
-public function setTelefono(?string $telefono): self
+public function setTelefono(?string $telefono): static
 ```
 
 En el caso del e­mail, además, podemos especificar que queremos que sea un e­mail válido, lo que se consigue con la anotación `@Assert\Email`:
