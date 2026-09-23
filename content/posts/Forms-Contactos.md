@@ -285,23 +285,14 @@ class Contacto
 
 Estas aserciones repercuten directamente sobre el código HTML del formulario, donde se añadirá el atributo `required` para que se validen los datos en el cliente. Para probarlo, hay que modificar el atributo `required` mediante Firebug.
 
-Además, en todos los setters hemos de modificar el valor devulto para que se devuelva a sí mismo. Es lo que se llama `fluent setter`; esto permite encadenar los setters, por ejemplo: `$contacto->setNombre('Juan')->setEmail('correo@c.com');`
+Además, en todos los setters hemos de modificar el valor devuelto para que se devuelva a sí mismo. Es lo que se llama `fluent setter`; esto permite encadenar los setters, por ejemplo: `$contacto->setNombre('Juan')->setEmail('correo@c.com');`
 
 ```php
 <?php
 public function setTelefono(?string $telefono): self
 ```
 
-En el caso del e­mail, además, podemos especificar que queremos que sea un e­mail válido, lo que se consigue con esta otra anotación:
-
-```php
-<?php
-/**
- * @ORM\Column(type="string", length=255)
- * @Assert\NotBlank()
- */
-private $email;
-```
+En el caso del e­mail, además, podemos especificar que queremos que sea un e­mail válido, lo que se consigue con la anotación `@Assert\Email`:
 
 Estas funciones de validación admiten una serie de parámetros útiles. Uno de los más útiles es `message`, que se emplea para determinar el mensaje de error que mostrar al usuario en caso de que el dato no sea válido. Por ejemplo, para el e­mail, podemos especificar este mensaje de error:
 
