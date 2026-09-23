@@ -297,13 +297,10 @@ En el caso del e­mail, además, podemos especificar que queremos que sea un e­
 Estas funciones de validación admiten una serie de parámetros útiles. Uno de los más útiles es `message`, que se emplea para determinar el mensaje de error que mostrar al usuario en caso de que el dato no sea válido. Por ejemplo, para el e­mail, podemos especificar este mensaje de error:
 
 ```php
-<?php
-/**
- * @ORM\Column(type="string", length=255)
- * @Assert\NotBlank()
- * @Assert\Email(message="El email {{ value }} no es válido")
- */
-private $email;
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Email(message: "El email '{{ value }}' no es válido.")]
+    private ?string $email = null;
 ```
 
 Y se disparará cuando no escribamos un e­mail válido e intentemos enviar el formulario:
