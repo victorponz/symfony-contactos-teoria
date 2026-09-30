@@ -460,6 +460,6 @@ En twig
 
 > -reto-
 >
-> * En la portada de la web crea una lista con todos los contactos. Cada elemento será un enlace a una página donde se muestran los detalles del mismo así como un botón para Editar y Modificar. Crea la lógica en el controlador para saber si el usuario ha pulsado en editar (guardar) o en borrar. En esta [página](https://symfony.com/doc/6.4/form/multiple_buttons.html) explica cómo gestionar un formulario con varios botones.
+> * En la portada de la web crea una lista con todos los contactos. Cada elemento será un enlace a una página donde se muestran los detalles del mismo así como un botón para Editar. En la ventana de Editar, crea dos botones: uno para Guardar y otro para Eliminar. Crea la lógica en el controlador para saber si el usuario ha pulsado en editar (guardar) o en borrar. En esta [página](https://symfony.com/doc/6.4/form/multiple_buttons.html) explica cómo gestionar un formulario con varios botones.
 > * Crea un enlace para poder añadir un contacto.
 > * Donde sea necesario se ha de comprobar que el usuario está logeado y enviarlo a `/index` en caso contrario
